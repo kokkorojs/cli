@@ -7,7 +7,7 @@
 
 とある咕咕の QQ 机器人框架
 
-> 本项目是一个基于 [oicq](https://github.com/takayama-lily/oicq) 框架，使用 [TypeScript](https://www.typescriptlang.org/) 语言开发的 [QQ](https://im.qq.com/) 机器人
+> 本项目是一个基于 [oicq](https://github.com/takayama-lily/oicq) 协议库，使用 [TypeScript](https://www.typescriptlang.org/) 语言开发的 [QQ](https://im.qq.com/) 机器人框架
 
 ## 介绍
 
