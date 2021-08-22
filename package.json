@@ -1,0 +1,37 @@
+{
+  "name": "kokkoro",
+  "version": "0.0.1",
+  "description": "とある咕咕の QQ 机器人框架",
+  "main": "index.js",
+  "bin": {
+    "kokkoro": "./dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dcyuki/kokkoro.git"
+  },
+  "keywords": [
+    "qq",
+    "bot",
+    "qqbot",
+    "android",
+    "oicq",
+    "coolq",
+    "princess-connect-redive"
+  ],
+  "author": "dc_yuki",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dcyuki/kokkoro/issues"
+  },
+  "homepage": "https://github.com/dcyuki/kokkoro#readme",
+  "dependencies": {
+    "oicq": "^1.19.3"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.0.14",
+    "cac": "^6.7.3",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.1"
+  }
+}
