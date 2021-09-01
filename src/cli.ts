@@ -121,17 +121,18 @@ function start(cli: CAC) {
       }
 
       // Acsii Font Name: Mini: http://patorjk.com/software/taag/
-      const wellcome: string = `--------------------------------------------------------------------------------------------
-                                                                             _          
-      \\    / _  | |  _  _  ._ _   _    _|_  _    \\_/    ._ _   _  ._ _  o   |_)  _ _|_ 
-       \\/\\/ (/_ | | (_ (_) | | | (/_    |_ (_)    | |_| | | | (/_ | | | |   |_) (_) |_ 
---------------------------------------------------------------------------------------------`;
+      const wellcome: string = `-------------------------------------------------------------------------------------
+
+          \\    / _  | |  _  _  ._ _   _    _|_  _    |   _  |  |   _  ._ _  
+           \\/\\/ (/_ | | (_ (_) | | | (/_    |_ (_)   |< (_) |< |< (_) | (_)
+
+-------------------------------------------------------------------------------------`;
       console.log('\x1B[36m%s\x1B[0m', wellcome);
 
       util.logger.level = 'all';
       util.logger.mark(`----------`);
       util.logger.mark(`Package Version: kokkoro@${help.KOKKORO_VERSION} (Released on 2021/8/15)`);
-      util.logger.mark(`View Changelogs：https://docs.kokkoro.moe/#/changelog/`);
+      util.logger.mark(`View Changelogs：https://github.com/dcyuki/kokkoro/releases`);
       util.logger.mark(`----------`);
       util.logger.mark(`项目启动完成，开始登录账号`);
 

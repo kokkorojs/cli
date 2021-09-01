@@ -3,7 +3,7 @@ import { Client } from 'oicq'
 import { Dirent } from 'fs'
 import { readFile, writeFile, readdir, mkdir } from 'fs/promises'
 
-import { cwd } from './util'
+import { cwd, error, logger } from './util'
 import { ISetting } from '..'
 
 // 所有插件实例
@@ -45,11 +45,13 @@ class Plugin {
     if (this.binds.has(bot)) {
       throw new PluginError("这个机器人实例已经启用了此插件");
     }
+
     const mod = require.cache[this.fullpath];
 
     if (typeof mod?.exports.enable !== "function") {
       throw new PluginError("此插件未导出 enable 方法，无法启用。");
     }
+
     try {
       const res = mod?.exports.enable(bot);
 
@@ -58,7 +60,7 @@ class Plugin {
       await this._editBotPluginCache(bot, "add");
       this.binds.add(bot);
     } catch (e) {
-      throw new PluginError(`启用插件时遇到错误。\n错误信息：${e.message}`);
+      throw new PluginError(`启用插件时遇到错误\n${error} ${e.message}`);
     }
   }
 
@@ -80,7 +82,7 @@ class Plugin {
       await this._editBotPluginCache(bot, "delete");
       this.binds.delete(bot);
     } catch (e) {
-      throw new PluginError(`禁用插件时遇到错误。\n错误信息：${e.message}`)
+      throw new PluginError(`禁用插件时遇到错误\n${error} ${e.message}`)
     }
   }
 
@@ -118,7 +120,7 @@ class Plugin {
 
       for (let bot of binded) await this.enable(bot);
     } catch (e) {
-      throw new PluginError(`重启插件时遇到错误。\n错误信息：${e.message}`);
+      throw new PluginError(`重启插件时遇到错误\n${error} ${e.message}`);
     }
   }
 }
@@ -139,7 +141,7 @@ async function importPlugin(name: string): Promise<Plugin> {
 
   for (let file of files) {
     if ((file.isDirectory() || file.isSymbolicLink()) && file.name === name) {
-      resolved = join(cwd, '/plugins', name)
+      resolved = join(cwd, '/plugins', name);
     }
   }
   // 加载 npm 插件
@@ -148,7 +150,7 @@ async function importPlugin(name: string): Promise<Plugin> {
 
     for (let file of modules) {
       if (file.isDirectory() && (file.name === name || file.name === "kokkoro-plugin-" + name)) {
-        resolved = file.name
+        resolved = join(cwd, '/node_modules', file.name);
       }
     }
   }
@@ -156,11 +158,12 @@ async function importPlugin(name: string): Promise<Plugin> {
   if (!resolved) throw new PluginError(`插件名错误，无法找到此插件`)
 
   try {
-    const plugin = new Plugin(name, resolved)
-    plugins.set(name, plugin)
+    const plugin = new Plugin(name, resolved);
+
+    plugins.set(name, plugin);
     return plugin
-  } catch (e) {
-    throw new PluginError(`导入插件失败，不合法的 package\n错误信息：${e.message}`);
+  } catch (err) {
+    throw new PluginError(`导入插件失败，不合法的 package\n${error} ${err.message}`);
   }
 }
 
@@ -240,13 +243,14 @@ async function disableAll(bot: Client): Promise<void> {
 }
 
 /**
- * 查找所有可用插件
+ * 检索所有可用插件
  * @throws {Error}
  */
 async function findAllPlugins() {
-  const plugin_modules: string[] = [];
-  const node_modules: string[] = [];
   const files: Dirent[] = [];
+  const modules: Dirent[] = [];
+  const node_modules: string[] = [];
+  const plugin_modules: string[] = [];
 
   try {
     files.push(...await readdir(join(cwd, `/plugins`), { withFileTypes: true }))
@@ -257,24 +261,22 @@ async function findAllPlugins() {
   for (let file of files) {
     if (file.isDirectory() || file.isSymbolicLink()) {
       try {
-        require.resolve(`${cwd}/plugins/` + file.name);
+        require.resolve(`${cwd}/plugins/${file.name}`);
         plugin_modules.push(file.name);
       } catch { }
     }
   }
 
-  const modules: Dirent[] = [];
-
   try {
     modules.push(...await readdir(join(cwd, '/node_modules'), { withFileTypes: true }));
-  } catch (error) {
+  } catch (err) {
     await mkdir(join(cwd, `/node_modules`));
   }
 
   for (let file of modules) {
     if (file.isDirectory() && file.name.startsWith("kokkoro-plugin-")) {
       try {
-        require.resolve(file.name);
+        require.resolve(`${cwd}/node_modules/${file.name}`);
         node_modules.push(file.name);
       } catch { }
     }
@@ -293,20 +295,29 @@ async function findAllPlugins() {
  */
 async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
   const dir = join(bot.dir, 'setting');
+  const all_setting: ISetting = { plugins: [] }
 
   try {
     const setting: ISetting = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
+
+    all_setting.plugins.push(...setting.plugins);
 
     for (let name of setting.plugins) {
       try {
         const plugin = await importPlugin(name);
 
         await plugin.enable(bot);
-      } catch { }
+      } catch (error) {
+        logger.error(error.message)
+      }
     }
   } catch { }
 
   return plugins
+}
+
+function initSetting() {
+
 }
 
 export {

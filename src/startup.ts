@@ -134,11 +134,11 @@ const cmdHanders: {
 
     if (!cmd) {
       try {
-        const { plugins, plugin_modules, node_modules } = await findAllPlugins();
+        const { plugin_modules, node_modules, plugins } = await findAllPlugins();
         const msg = ['可用插件模块列表：'];
 
         for (let name of [...plugin_modules, ...node_modules]) {
-          if (name.startsWith('kokkoro-plugin-')) name = name.slice(12)
+          if (name.startsWith('kokkoro-plugin-')) name = name.slice(15)
 
           const plugin = plugins.get(name);
           msg.push(`▼ ${name} (${plugin ? '已' : '未'}导入)`);
@@ -147,7 +147,7 @@ const cmdHanders: {
             for (let bot of plugin.binds) msg.push(`\t${bot.nickname} (${bot.uin}),`);
           }
         }
-        msg.push(`\n※ 当前目录共找到 ${plugin_modules.length + node_modules.length} 个插件`);
+        msg.push(`\n※ 当前目录共检索到 ${plugin_modules.length + node_modules.length} 个插件`);
 
         return msg.join('\n')
       } catch (e) {

@@ -1,6 +1,11 @@
+import axios from 'axios'
 import { getLogger, Logger } from 'log4js'
 
-const logger: Logger = getLogger('[kokkoro bot log]')
+// axios
+axios.defaults.timeout = 10000;
+
+// log4js
+const logger: Logger = getLogger('[kokkoro log]')
 logger.level = 'all';
 
 const cwd = process.cwd();
@@ -50,10 +55,44 @@ function checkCommand(command: { [key: string]: RegExp }, raw_message: string): 
   }
 }
 
+/**
+ * 发送图片（oicq 无法捕捉网络图片是否下载失败，所以单独处理）
+ * 
+ * @param url - 图片 url
+ * @param flash - 是否闪图
+ * @returns - Promise
+ */
+function sendImage(url: string, flash: boolean = false): Promise<string | Error> {
+  return new Promise(async (resolve, reject) => {
+    // 判断是否为网络链接
+    if (!/^https?/g.test(url)) return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
+
+    await axios.get(url, { responseType: 'arraybuffer' })
+      .then((res) => {
+        const buffer: Buffer = Buffer.from(res.data, "binary");
+
+        resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${buffer}]`);
+      })
+      .catch((error: Error) => {
+        reject(error);
+      })
+  })
+}
+
+/**
+ * 生成 at 字段 CQ 码
+ * 
+ * @param qq 
+ * @returns 
+ */
+function at(qq: number): string {
+  return `[CQ:at,qq=${qq}]`
+}
+
 export {
-  logger,
+  axios, logger,
   cwd, uptime, platform,
   red, green, yellow, blue, magenta, cyan, white,
   info, error, warn, success,
-  checkCommand,
+  checkCommand, sendImage, at
 }
