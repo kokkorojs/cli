@@ -12,6 +12,7 @@ class PluginError extends Error {
         this.name = "PluginError";
     }
 }
+// #region Plugin 类
 class Plugin {
     constructor(name, path) {
         this.name = name;
@@ -109,9 +110,9 @@ class Plugin {
         }
     }
 }
+// #endregion
+// #region 导入插件
 /**
- * 导入插件
- *
  * @param name - 插件名
  * @returns - Plugin 对象
  * @throws {Error}
@@ -147,8 +148,9 @@ async function importPlugin(name) {
         throw new PluginError(`导入插件失败，不合法的 package\n${util_1.error} ${err.message}`);
     }
 }
+// #endregion
+// #region 校验导入插件
 /**
- * 校验导入插件
  * @param name - 插件名
  * @returns - Plugin 对象
  */
@@ -158,9 +160,9 @@ function checkImported(name) {
     }
     return plugins.get(name);
 }
+// #endregion
+// #region 卸载插件
 /**
- * 卸载插件
- *
  * @param name - 插件名
  * @throws {Error}
  */
@@ -169,9 +171,9 @@ async function deletePlugin(name) {
     plugins.delete(name);
 }
 exports.deletePlugin = deletePlugin;
+// #endregion
+// #region 重启插件
 /**
- * 重启插件
- *
  * @param name - 插件名
  * @throws {Error}
  * @returns - void
@@ -180,9 +182,9 @@ function rebootPlugin(name) {
     return checkImported(name).reboot();
 }
 exports.rebootPlugin = rebootPlugin;
+// #endregion
+// #region 启用插件
 /**
- * 启用插件
- *
  * @param name - 插件名字
  * @param bot - bot 实例
  * @returns - void
@@ -192,9 +194,9 @@ async function enable(name, bot) {
     return plugin.enable(bot);
 }
 exports.enable = enable;
+// #endregion
+// #region 禁用插件
 /**
- * 禁用插件
- *
  * @param name - 插件名字
  * @param bot - bot 实例
  * @returns - void
@@ -204,9 +206,9 @@ function disable(name, bot) {
     return checkImported(name).disable(bot);
 }
 exports.disable = disable;
+// #endregion
+// #region 禁用所有插件
 /**
- * 禁用所有插件
- *
  * @param bot - bot 实例
  * @returns - void
  */
@@ -219,8 +221,9 @@ async function disableAll(bot) {
     }
 }
 exports.disableAll = disableAll;
+// #endregion
+// #region 检索所有可用插件
 /**
- * 检索所有可用插件
  * @throws {Error}
  */
 async function findAllPlugins() {
@@ -263,9 +266,9 @@ async function findAllPlugins() {
     };
 }
 exports.findAllPlugins = findAllPlugins;
+// #endregion
+// #region bot 启动后恢复它原先绑定的插件
 /**
- * bot 启动后恢复它原先绑定的插件
- *
  * @param bot - bot 实例
  * @returns Map<string, Plugin>
  */
@@ -289,5 +292,6 @@ async function restorePlugins(bot) {
     return plugins;
 }
 exports.restorePlugins = restorePlugins;
+// #endregion
 function initSetting() {
 }

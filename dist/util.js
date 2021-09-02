@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.at = exports.sendImage = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.logger = exports.axios = void 0;
+exports.at = exports.image = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.logger = exports.axios = void 0;
 const axios_1 = __importDefault(require("axios"));
 exports.axios = axios_1.default;
 const log4js_1 = require("log4js");
@@ -69,13 +69,13 @@ function checkCommand(command, raw_message) {
 }
 exports.checkCommand = checkCommand;
 /**
- * 发送图片（oicq 无法捕捉网络图片是否下载失败，所以单独处理）
+ * 发送图片（oicq 无法 catch 网络图片下载失败，所以单独处理）
  *
  * @param url - 图片 url
  * @param flash - 是否闪图
  * @returns - Promise
  */
-function sendImage(url, flash = false) {
+function image(url, flash = false) {
     return new Promise(async (resolve, reject) => {
         // 判断是否为网络链接
         if (!/^https?/g.test(url))
@@ -90,7 +90,7 @@ function sendImage(url, flash = false) {
         });
     });
 }
-exports.sendImage = sendImage;
+exports.image = image;
 /**
  * 生成 at 字段 CQ 码
  *

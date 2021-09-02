@@ -55,14 +55,15 @@ function checkCommand(command: { [key: string]: RegExp }, raw_message: string): 
   }
 }
 
+
 /**
- * 发送图片（oicq 无法捕捉网络图片是否下载失败，所以单独处理）
+ * 发送图片（oicq 无法 catch 网络图片下载失败，所以单独处理）
  * 
  * @param url - 图片 url
  * @param flash - 是否闪图
  * @returns - Promise
  */
-function sendImage(url: string, flash: boolean = false): Promise<string | Error> {
+function image(url: string, flash: boolean = false): Promise<string | Error> {
   return new Promise(async (resolve, reject) => {
     // 判断是否为网络链接
     if (!/^https?/g.test(url)) return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
@@ -94,5 +95,5 @@ export {
   cwd, uptime, platform,
   red, green, yellow, blue, magenta, cyan, white,
   info, error, warn, success,
-  checkCommand, sendImage, at
+  checkCommand, image, at
 }
