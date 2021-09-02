@@ -4,7 +4,6 @@ import ora from 'ora'
 import cac, { CAC } from 'cac'
 import { resolve } from 'path'
 
-
 import { existsSync } from 'fs'
 import { promisify } from 'util'
 import { exec } from 'child_process'

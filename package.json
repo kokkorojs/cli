@@ -27,12 +27,12 @@
   "homepage": "https://github.com/dcyuki/kokkoro#readme",
   "dependencies": {
     "axios": "^0.21.1",
-    "oicq": "^1.19.3"
-  },
-  "devDependencies": {
-    "@types/prompts": "^2.0.14",
     "cac": "^6.7.3",
+    "oicq": "^1.19.6",
     "ora": "^5.4.1",
     "prompts": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.0.14"
   }
 }
