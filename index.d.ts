@@ -25,15 +25,15 @@ interface GlobalConfig {
 }
 
 interface ISetting {
-  plugins: string[];
+  lock: boolean;
+  switch: boolean;
+  [param: string]: any;
+}
+
+interface IConfig {
+  plugin: string[];
   [group_id: number]: {
     name: string;
-    settings: {
-      [plugin: string]: {
-        lock: boolean;
-        switch: boolean;
-        [param: string]: any;
-      }
-    }
+    setting: ISetting
   }
 }

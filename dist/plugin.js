@@ -19,23 +19,31 @@ class Plugin {
         this.path = path;
         this.binds = new Set();
         this.fullpath = require.resolve(this.path);
-        require(this.path);
+        this.setting = require(this.path).default_setting;
     }
     async _editBotPluginCache(bot, method) {
-        const dir = path_1.join(bot.dir, 'setting');
-        let setting;
+        const dir = path_1.join(bot.dir, 'config');
+        let config;
         let set;
         try {
-            setting = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
-            set = new Set(setting.plugins);
+            config = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
+            set = new Set(config.plugin);
         }
         catch {
-            setting = { plugins: [] };
+            config = { plugin: [] };
             set = new Set;
         }
         set[method](this.name);
-        setting.plugins = [...set];
-        return promises_1.writeFile(dir, JSON.stringify(setting, null, 2));
+        config.plugin = [...set];
+        // 写入群配置
+        const { gl } = bot;
+        gl.forEach((value, key) => {
+            config[key] = {
+                name: value.group_name,
+                setting: Object.assign({ lock: false, switch: false }, this.setting),
+            };
+        });
+        return promises_1.writeFile(`${dir}.js`, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
     }
     async enable(bot) {
         if (this.binds.has(bot)) {
@@ -273,12 +281,10 @@ exports.findAllPlugins = findAllPlugins;
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot) {
-    const dir = path_1.join(bot.dir, 'setting');
-    const all_setting = { plugins: [] };
+    const dir = path_1.join(bot.dir, 'config.js');
     try {
-        const setting = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
-        all_setting.plugins.push(...setting.plugins);
-        for (let name of setting.plugins) {
+        const config = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
+        for (let name of config.plugin) {
             try {
                 const plugin = await importPlugin(name);
                 await plugin.enable(bot);
@@ -292,6 +298,3 @@ async function restorePlugins(bot) {
     return plugins;
 }
 exports.restorePlugins = restorePlugins;
-// #endregion
-function initSetting() {
-}

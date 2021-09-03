@@ -1,10 +1,10 @@
 import { join } from 'path'
-import { Client } from 'oicq'
+import { Client, GroupInfo } from 'oicq'
 import { Dirent } from 'fs'
 import { readFile, writeFile, readdir, mkdir } from 'fs/promises'
 
 import { cwd, error, logger } from './util'
-import { ISetting } from '..'
+import { IConfig, ISetting } from '..'
 
 // 所有插件实例
 const plugins = new Map<string, Plugin>()
@@ -16,30 +16,41 @@ class PluginError extends Error {
 // #region Plugin 类
 class Plugin {
   protected readonly fullpath: string;
+  readonly setting: ISetting;
   readonly binds = new Set<Client>();
 
   constructor(protected readonly name: string, protected readonly path: string) {
     this.fullpath = require.resolve(this.path);
-    require(this.path);
+    this.setting = require(this.path).default_setting;
   }
 
   protected async _editBotPluginCache(bot: Client, method: 'add' | 'delete') {
-    const dir = join(bot.dir, 'setting');
-    let setting: ISetting;
+    const dir = join(bot.dir, 'config');
+    let config: IConfig;
     let set: Set<string>;
 
     try {
-      setting = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
-      set = new Set(setting.plugins);
+      config = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
+      set = new Set(config.plugin);
     } catch {
-      setting = { plugins: [] };
+      config = { plugin: [] };
       set = new Set;
     }
 
     set[method](this.name);
-    setting.plugins = [...set];
+    config.plugin = [...set];
 
-    return writeFile(dir, JSON.stringify(setting, null, 2));
+    // 写入群配置
+    const { gl } = bot;
+
+    gl.forEach((value: GroupInfo, key: number) => {
+      config[key] = {
+        name: value.group_name,
+        setting: Object.assign({ lock: false, switch: false }, this.setting),
+      }
+    });
+
+    return writeFile(`${dir}.js`, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
   }
 
   async enable(bot: Client) {
@@ -297,15 +308,12 @@ async function findAllPlugins() {
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
-  const dir = join(bot.dir, 'setting');
-  const all_setting: ISetting = { plugins: [] }
+  const dir = join(bot.dir, 'config.js');
 
   try {
-    const setting: ISetting = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
+    const config: IConfig = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
 
-    all_setting.plugins.push(...setting.plugins);
-
-    for (let name of setting.plugins) {
+    for (let name of config.plugin) {
       try {
         const plugin = await importPlugin(name);
 
@@ -319,10 +327,6 @@ async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
   return plugins
 }
 // #endregion
-
-function initSetting() {
-
-}
 
 export {
   deletePlugin, rebootPlugin, enable, disable, disableAll, findAllPlugins, restorePlugins
