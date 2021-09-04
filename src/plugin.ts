@@ -1,7 +1,7 @@
 import { join } from 'path'
 import { Client, GroupInfo } from 'oicq'
 import { Dirent } from 'fs'
-import { readFile, writeFile, readdir, mkdir } from 'fs/promises'
+import { writeFile, readdir, mkdir } from 'fs/promises'
 
 import { cwd, error, logger } from './util'
 import { IConfig, ISetting } from '..'
@@ -25,12 +25,13 @@ class Plugin {
   }
 
   protected async _editBotPluginCache(bot: Client, method: 'add' | 'delete') {
-    const dir = join(bot.dir, 'config');
     let config: IConfig;
     let set: Set<string>;
 
+    const dir = join(bot.dir, 'config.js');
+
     try {
-      config = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
+      config = require(dir);
       set = new Set(config.plugin);
     } catch {
       config = { plugin: [] };
@@ -44,13 +45,20 @@ class Plugin {
     const { gl } = bot;
 
     gl.forEach((value: GroupInfo, key: number) => {
-      config[key] = {
+      const default_setting = {
         name: value.group_name,
         setting: Object.assign({ lock: false, switch: false }, this.setting),
       }
+
+      Object.assign(
+        default_setting.setting,
+        config[key] ? config[key].setting : {}
+      );
+      
+      config[key] = default_setting;
     });
 
-    return writeFile(`${dir}.js`, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+    return writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
   }
 
   async enable(bot: Client) {
@@ -311,7 +319,7 @@ async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
   const dir = join(bot.dir, 'config.js');
 
   try {
-    const config: IConfig = JSON.parse(await readFile(dir, { encoding: 'utf8' }));
+    const config = require(dir);
 
     for (let name of config.plugin) {
       try {

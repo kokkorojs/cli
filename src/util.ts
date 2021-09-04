@@ -63,19 +63,19 @@ function checkCommand(command: { [key: string]: RegExp }, raw_message: string): 
  * @param flash - 是否闪图
  * @returns - Promise
  */
-function image(url: string, flash: boolean = false): Promise<string | Error> {
+function sendImage(url: string, flash: boolean = false): Promise<string | Error> {
   return new Promise(async (resolve, reject) => {
     // 判断是否为网络链接
     if (!/^https?/g.test(url)) return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
 
     await axios.get(url, { responseType: 'arraybuffer' })
-      .then((res) => {
-        const buffer: Buffer = Buffer.from(res.data, "binary");
+      .then((response) => {
+        const base64: string = Buffer.from(response.data, 'binary').toString('base64');
 
-        resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${buffer}]`);
+        resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=base64://${base64}]`);
       })
       .catch((error: Error) => {
-        reject(error);
+        reject(`Error: ${error.message}\n图片流写入失败，但已为你获取到图片地址:\n${url}`);
       })
   })
 }
@@ -95,5 +95,5 @@ export {
   cwd, uptime, platform,
   red, green, yellow, blue, magenta, cyan, white,
   info, error, warn, success,
-  checkCommand, image, at
+  checkCommand, sendImage, at
 }

@@ -22,11 +22,11 @@ class Plugin {
         this.setting = require(this.path).default_setting;
     }
     async _editBotPluginCache(bot, method) {
-        const dir = path_1.join(bot.dir, 'config');
         let config;
         let set;
+        const dir = path_1.join(bot.dir, 'config.js');
         try {
-            config = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
+            config = require(dir);
             set = new Set(config.plugin);
         }
         catch {
@@ -38,12 +38,14 @@ class Plugin {
         // 写入群配置
         const { gl } = bot;
         gl.forEach((value, key) => {
-            config[key] = {
+            const default_setting = {
                 name: value.group_name,
                 setting: Object.assign({ lock: false, switch: false }, this.setting),
             };
+            Object.assign(default_setting.setting, config[key] ? config[key].setting : {});
+            config[key] = default_setting;
         });
-        return promises_1.writeFile(`${dir}.js`, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+        return promises_1.writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
     }
     async enable(bot) {
         if (this.binds.has(bot)) {
@@ -283,7 +285,7 @@ exports.findAllPlugins = findAllPlugins;
 async function restorePlugins(bot) {
     const dir = path_1.join(bot.dir, 'config.js');
     try {
-        const config = JSON.parse(await promises_1.readFile(dir, { encoding: 'utf8' }));
+        const config = require(dir);
         for (let name of config.plugin) {
             try {
                 const plugin = await importPlugin(name);

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.at = exports.image = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.logger = exports.axios = void 0;
+exports.at = exports.sendImage = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.logger = exports.axios = void 0;
 const axios_1 = __importDefault(require("axios"));
 exports.axios = axios_1.default;
 const log4js_1 = require("log4js");
@@ -75,22 +75,22 @@ exports.checkCommand = checkCommand;
  * @param flash - 是否闪图
  * @returns - Promise
  */
-function image(url, flash = false) {
+function sendImage(url, flash = false) {
     return new Promise(async (resolve, reject) => {
         // 判断是否为网络链接
         if (!/^https?/g.test(url))
             return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
         await axios_1.default.get(url, { responseType: 'arraybuffer' })
-            .then((res) => {
-            const buffer = Buffer.from(res.data, "binary");
-            resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${buffer}]`);
+            .then((response) => {
+            const base64 = Buffer.from(response.data, 'binary').toString('base64');
+            resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=base64://${base64}]`);
         })
             .catch((error) => {
-            reject(error);
+            reject(`Error: ${error.message}\n图片流写入失败，但已为你获取到图片地址:\n${url}`);
         });
     });
 }
-exports.image = image;
+exports.sendImage = sendImage;
 /**
  * 生成 at 字段 CQ 码
  *

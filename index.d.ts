@@ -25,12 +25,16 @@ interface GlobalConfig {
 }
 
 interface ISetting {
+  // 插件锁定
   lock: boolean;
+  // 插件开关
   switch: boolean;
+  // 其它设置
   [param: string]: any;
 }
 
 interface IConfig {
+  // 插件列表
   plugin: string[];
   [group_id: number]: {
     name: string;
