@@ -3,9 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.at = exports.sendImage = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.logger = exports.axios = void 0;
+exports.at = exports.sendImage = exports.checkCommand = exports.success = exports.warn = exports.error = exports.info = exports.white = exports.cyan = exports.magenta = exports.blue = exports.yellow = exports.green = exports.red = exports.platform = exports.uptime = exports.cwd = exports.schedule = exports.logger = exports.axios = void 0;
 const axios_1 = __importDefault(require("axios"));
 exports.axios = axios_1.default;
+const node_schedule_1 = __importDefault(require("node-schedule"));
+exports.schedule = node_schedule_1.default;
 const log4js_1 = require("log4js");
 // axios
 axios_1.default.defaults.timeout = 10000;

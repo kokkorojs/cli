@@ -1,4 +1,5 @@
 import axios from 'axios'
+import schedule from 'node-schedule'
 import { getLogger, Logger } from 'log4js'
 
 // axios
@@ -91,7 +92,7 @@ function at(qq: number): string {
 }
 
 export {
-  axios, logger,
+  axios, logger, schedule,
   cwd, uptime, platform,
   red, green, yellow, blue, magenta, cyan, white,
   info, error, warn, success,
