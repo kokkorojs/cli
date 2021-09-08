@@ -54,7 +54,7 @@ class Plugin {
         default_setting.setting,
         config[key] ? config[key].setting : {}
       );
-      
+
       config[key] = default_setting;
     });
 
@@ -131,7 +131,7 @@ class Plugin {
     delete require.cache[this.fullpath];
   }
 
-  async reboot() {
+  async restart() {
     try {
       const binded = Array.from(this.binds);
 
@@ -220,8 +220,8 @@ async function deletePlugin(name: string): Promise<void> {
  * @throws {Error}
  * @returns - void
  */
-function rebootPlugin(name: string): Promise<void> {
-  return checkImported(name).reboot();
+function restartPlugin(name: string): Promise<void> {
+  return checkImported(name).restart();
 }
 // #endregion
 
@@ -337,5 +337,5 @@ async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
 // #endregion
 
 export {
-  deletePlugin, rebootPlugin, enable, disable, disableAll, findAllPlugins, restorePlugins
+  deletePlugin, restartPlugin, enable, disable, disableAll, findAllPlugins, restorePlugins
 }

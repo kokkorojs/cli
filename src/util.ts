@@ -1,6 +1,8 @@
 import axios from 'axios'
 import schedule from 'node-schedule'
 import { getLogger, Logger } from 'log4js'
+import { MessageEventData } from 'oicq';
+import { getConfig } from './config';
 
 // axios
 axios.defaults.timeout = 10000;
@@ -55,7 +57,6 @@ function checkCommand(command: { [key: string]: RegExp }, raw_message: string): 
     return key
   }
 }
-
 
 /**
  * 发送图片（oicq 无法 catch 网络图片下载失败，所以单独处理）

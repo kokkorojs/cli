@@ -26,10 +26,68 @@ const child_process_1 = require("child_process");
 const help_1 = __importDefault(require("./help"));
 const util = __importStar(require("./util"));
 const bot_1 = require("./bot");
+const setting_1 = require("./setting");
 const config_1 = require("./config");
 const plugin_1 = require("./plugin");
+// 维护组 QQ
+const admin = [2225151531];
 // 所有机器人实例
 const all_bot = new Map();
+/**
+ * 获取成员等级
+ *
+ * @param event 群消息事件对象
+ * @returns
+ * level 0 群成员
+ * level 1 群成员
+ * level 2 群成员
+ * level 3 管  理
+ * level 4 群  主
+ * level 5 主  人
+ * level 6 维护组
+ */
+function getUserLevel(event) {
+    const { self_id, user_id, sender } = event;
+    const { level = 0, role = 'member' } = sender;
+    const { bots } = config_1.getConfig();
+    const { masters, prefix } = bots[self_id];
+    let user_level;
+    switch (true) {
+        case admin.includes(user_id):
+            user_level = 6;
+            break;
+        case masters.includes(user_id):
+            user_level = 5;
+            break;
+        case role === 'owner':
+            user_level = 4;
+            break;
+        case role === 'admin':
+            user_level = 3;
+            break;
+        case level > 4:
+            user_level = 2;
+            break;
+        case level > 2:
+            user_level = 1;
+            break;
+        default:
+            user_level = 0;
+            break;
+    }
+    return { user_level, prefix };
+}
+async function onSetting(event) {
+    // const setting = getSetting();
+    const { user_level, prefix } = getUserLevel(event);
+    if (user_level < 5 || !event.raw_message.startsWith(prefix))
+        return;
+    const { cmd, params } = config_1.parseCommandline(event.raw_message.replace(prefix, ''));
+    this.logger.info(`收到指令，正在处理: ${event.raw_message}`);
+    const msg = await groupCmdHanders[cmd]?.call(this, params, event) || `Error：未知指令: ${cmd}`;
+    event.reply(msg);
+    this.logger.info(`处理完毕，指令回复: ${msg}`);
+}
 /**
  * 私聊消息监听
  *
@@ -37,16 +95,14 @@ const all_bot = new Map();
  * @param data - bot 接收到的消息对象
  * @returns
  */
-async function onMessage(data) {
-    const { self_id } = data;
-    const { bots } = config_1.getConfig();
-    const { masters, prefix } = bots[self_id];
-    if (!masters.includes(data.user_id) || !data.raw_message.startsWith(prefix))
+async function onMessage(event) {
+    const { user_level, prefix } = getUserLevel(event);
+    if (user_level < 5 || !event.raw_message.startsWith(prefix))
         return;
-    const { cmd, params } = config_1.parseCommandline(data.raw_message.replace(prefix, ''));
-    this.logger.info(`收到指令，正在处理: ${data.raw_message}`);
-    const msg = await cmdHanders[cmd]?.call(this, params, data) || `Error：未知指令: ${cmd}`;
-    data.reply(msg);
+    const { cmd, params } = config_1.parseCommandline(event.raw_message.replace(prefix, ''));
+    this.logger.info(`收到指令，正在处理: ${event.raw_message}`);
+    const msg = await privateCmdHanders[cmd]?.call(this, params, event) || `Error：未知指令: ${cmd}`;
+    event.reply(msg);
     this.logger.info(`处理完毕，指令回复: ${msg}`);
 }
 function onOnline() {
@@ -92,6 +148,7 @@ async function bindMasterEvents(bot) {
     bot.removeAllListeners('system.login.error');
     bot.on('system.online', onOnline);
     bot.on('system.offline', onOffline);
+    bot.on('message.group', onSetting);
     bot.on('message.private', onMessage);
     let num = 0;
     const plugins = await plugin_1.restorePlugins(bot);
@@ -103,7 +160,15 @@ async function bindMasterEvents(bot) {
         broadcastOne(bot, `启动成功，启用了 ${num} 个插件，发送 ${config_1.getConfig().bots[bot.uin].prefix}help 可以查询 bot 相关指令`);
     }, 3000);
 }
-const cmdHanders = {
+const groupCmdHanders = {
+    async setting(params, event) {
+        if (params[0] === 'help') {
+            return help_1.default.setting;
+        }
+        return await setting_1.setSetting(params, event.self_id, event.group_id);
+    },
+};
+const privateCmdHanders = {
     async help(params) {
         return help_1.default[params[0]] || help_1.default.default;
     },
@@ -191,8 +256,8 @@ const cmdHanders = {
                     await plugin_1.deletePlugin(name);
                     msg = '卸载插件成功';
                     break;
-                case 'reboot':
-                    await plugin_1.rebootPlugin(name);
+                case 'restart':
+                    await plugin_1.restartPlugin(name);
                     msg = '重启插件成功';
                     break;
                 default:

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.restorePlugins = exports.findAllPlugins = exports.disableAll = exports.disable = exports.enable = exports.rebootPlugin = exports.deletePlugin = void 0;
+exports.restorePlugins = exports.findAllPlugins = exports.disableAll = exports.disable = exports.enable = exports.restartPlugin = exports.deletePlugin = void 0;
 const path_1 = require("path");
 const promises_1 = require("fs/promises");
 const util_1 = require("./util");
@@ -107,7 +107,7 @@ class Plugin {
         }
         delete require.cache[this.fullpath];
     }
-    async reboot() {
+    async restart() {
         try {
             const binded = Array.from(this.binds);
             await this.goDie();
@@ -188,10 +188,10 @@ exports.deletePlugin = deletePlugin;
  * @throws {Error}
  * @returns - void
  */
-function rebootPlugin(name) {
-    return checkImported(name).reboot();
+function restartPlugin(name) {
+    return checkImported(name).restart();
 }
-exports.rebootPlugin = rebootPlugin;
+exports.restartPlugin = restartPlugin;
 // #endregion
 // #region 启用插件
 /**
