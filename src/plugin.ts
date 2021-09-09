@@ -44,18 +44,20 @@ class Plugin {
     // 写入群配置
     const { gl } = bot;
 
-    gl.forEach((value: GroupInfo, key: number) => {
+    gl.forEach((value: GroupInfo, group_id: number) => {
       const default_setting = {
         name: value.group_name,
-        setting: Object.assign({ lock: false, switch: false }, this.setting),
+        setting: {
+          [this.name]: Object.assign({ lock: false, switch: false }, this.setting),
+        },
       }
 
       Object.assign(
-        default_setting.setting,
-        config[key] ? config[key].setting : {}
+        default_setting.setting[this.name],
+        config[group_id] ? config[group_id].setting[this.name] : {}
       );
 
-      config[key] = default_setting;
+      config[group_id] = default_setting;
     });
 
     return writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);

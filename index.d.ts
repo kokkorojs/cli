@@ -18,7 +18,7 @@ interface GlobalConfig {
       prefix: string;
       // 1-5
       platform: ConfBot["platform"];
-      // off,error,warn,info,debug,trace
+      // off, error, warn, info, debug, trace
       log_level: ConfBot["log_level"];
     }
   }
@@ -38,6 +38,8 @@ interface IConfig {
   plugin: string[];
   [group_id: number]: {
     name: string;
-    setting: ISetting
+    setting: {
+      [plugin_name: string]: ISetting
+    }
   }
 }

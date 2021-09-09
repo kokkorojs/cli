@@ -25,7 +25,7 @@ function getSetting() {
 
 // #dregion 写入群聊插件设置
 async function setSetting(params: ReturnType<typeof parseCommandline>['params'], self_id: number, group_id: number): Promise<string> {
-  if (!params[0]) return `${group_id} ${JSON.stringify(setting.get(self_id)?.[group_id], null, 2)}`
+  if (!params[0]) return `"${group_id}" ${JSON.stringify(setting.get(self_id)?.[group_id], null, 2)}`
 
   return 'setSetting'
 }

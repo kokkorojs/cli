@@ -37,13 +37,15 @@ class Plugin {
         config.plugin = [...set];
         // 写入群配置
         const { gl } = bot;
-        gl.forEach((value, key) => {
+        gl.forEach((value, group_id) => {
             const default_setting = {
                 name: value.group_name,
-                setting: Object.assign({ lock: false, switch: false }, this.setting),
+                setting: {
+                    [this.name]: Object.assign({ lock: false, switch: false }, this.setting),
+                },
             };
-            Object.assign(default_setting.setting, config[key] ? config[key].setting : {});
-            config[key] = default_setting;
+            Object.assign(default_setting.setting[this.name], config[group_id] ? config[group_id].setting[this.name] : {});
+            config[group_id] = default_setting;
         });
         return promises_1.writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
     }
