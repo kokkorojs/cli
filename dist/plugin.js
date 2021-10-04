@@ -6,6 +6,7 @@ const promises_1 = require("fs/promises");
 const util_1 = require("./util");
 // 所有插件实例
 const plugins = new Map();
+const { error } = util_1.tips;
 class PluginError extends Error {
     constructor() {
         super(...arguments);
@@ -24,7 +25,7 @@ class Plugin {
     async _editBotPluginCache(bot, method) {
         let config;
         let set;
-        const dir = path_1.join(bot.dir, 'config.js');
+        const dir = (0, path_1.join)(bot.dir, 'config.json');
         try {
             config = require(dir);
             set = new Set(config.plugin);
@@ -47,7 +48,7 @@ class Plugin {
             Object.assign(default_setting.setting[this.name], config[group_id] ? config[group_id].setting[this.name] : {});
             config[group_id] = default_setting;
         });
-        return promises_1.writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+        return (0, promises_1.writeFile)(dir, `${JSON.stringify(config, null, 2)}`);
     }
     async enable(bot) {
         if (this.binds.has(bot)) {
@@ -64,8 +65,9 @@ class Plugin {
             await this._editBotPluginCache(bot, "add");
             this.binds.add(bot);
         }
-        catch (e) {
-            throw new PluginError(`启用插件时遇到错误\n${util_1.error} ${e.message}`);
+        catch (error) {
+            const { message } = error;
+            throw new PluginError(`启用插件时遇到错误\n${error} ${message}`);
         }
     }
     async disable(bot) {
@@ -83,8 +85,9 @@ class Plugin {
             await this._editBotPluginCache(bot, "delete");
             this.binds.delete(bot);
         }
-        catch (e) {
-            throw new PluginError(`禁用插件时遇到错误\n${util_1.error} ${e.message}`);
+        catch (error) {
+            const { message } = error;
+            throw new PluginError(`禁用插件时遇到错误\n${error} ${message}`);
         }
     }
     async goDie() {
@@ -117,8 +120,9 @@ class Plugin {
             for (let bot of binded)
                 await this.enable(bot);
         }
-        catch (e) {
-            throw new PluginError(`重启插件时遇到错误\n${util_1.error} ${e.message}`);
+        catch (error) {
+            const { message } = error;
+            throw new PluginError(`重启插件时遇到错误\n${error} ${message}`);
         }
     }
 }
@@ -134,18 +138,18 @@ async function importPlugin(name) {
     if (plugins.has(name))
         return plugins.get(name);
     let resolved = "";
-    const files = await promises_1.readdir(path_1.join(util_1.cwd, '/plugins'), { withFileTypes: true });
+    const files = await (0, promises_1.readdir)((0, path_1.join)(util_1.cwd, '/plugins'), { withFileTypes: true });
     for (let file of files) {
         if ((file.isDirectory() || file.isSymbolicLink()) && file.name === name) {
-            resolved = path_1.join(util_1.cwd, '/plugins', name);
+            resolved = (0, path_1.join)(util_1.cwd, '/plugins', name);
         }
     }
     // 加载 npm 插件
     if (!resolved) {
-        const modules = await promises_1.readdir(path_1.join(util_1.cwd, '/node_modules'), { withFileTypes: true });
+        const modules = await (0, promises_1.readdir)((0, path_1.join)(util_1.cwd, '/node_modules'), { withFileTypes: true });
         for (let file of modules) {
             if (file.isDirectory() && (file.name === name || file.name === "kokkoro-plugin-" + name)) {
-                resolved = path_1.join(util_1.cwd, '/node_modules', file.name);
+                resolved = (0, path_1.join)(util_1.cwd, '/node_modules', file.name);
             }
         }
     }
@@ -156,8 +160,9 @@ async function importPlugin(name) {
         plugins.set(name, plugin);
         return plugin;
     }
-    catch (err) {
-        throw new PluginError(`导入插件失败，不合法的 package\n${util_1.error} ${err.message}`);
+    catch (error) {
+        const { message } = error;
+        throw new PluginError(`导入插件失败，不合法的 package\n${error} ${message}`);
     }
 }
 // #endregion
@@ -244,10 +249,10 @@ async function findAllPlugins() {
     const node_modules = [];
     const plugin_modules = [];
     try {
-        files.push(...await promises_1.readdir(path_1.join(util_1.cwd, `/plugins`), { withFileTypes: true }));
+        files.push(...await (0, promises_1.readdir)((0, path_1.join)(util_1.cwd, `/plugins`), { withFileTypes: true }));
     }
     catch (error) {
-        await promises_1.mkdir(path_1.join(util_1.cwd, `/plugins`));
+        await (0, promises_1.mkdir)((0, path_1.join)(util_1.cwd, `/plugins`));
     }
     for (let file of files) {
         if (file.isDirectory() || file.isSymbolicLink()) {
@@ -259,10 +264,10 @@ async function findAllPlugins() {
         }
     }
     try {
-        modules.push(...await promises_1.readdir(path_1.join(util_1.cwd, '/node_modules'), { withFileTypes: true }));
+        modules.push(...await (0, promises_1.readdir)((0, path_1.join)(util_1.cwd, '/node_modules'), { withFileTypes: true }));
     }
     catch (err) {
-        await promises_1.mkdir(path_1.join(util_1.cwd, `/node_modules`));
+        await (0, promises_1.mkdir)((0, path_1.join)(util_1.cwd, `/node_modules`));
     }
     for (let file of modules) {
         if (file.isDirectory() && file.name.startsWith("kokkoro-plugin-")) {
@@ -285,7 +290,7 @@ exports.findAllPlugins = findAllPlugins;
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot) {
-    const dir = path_1.join(bot.dir, 'config.js');
+    const dir = (0, path_1.join)(bot.dir, 'config.json');
     try {
         const config = require(dir);
         for (let name of config.plugin) {
@@ -294,7 +299,8 @@ async function restorePlugins(bot) {
                 await plugin.enable(bot);
             }
             catch (error) {
-                util_1.logger.error(error.message);
+                const { message } = error;
+                util_1.logger.error(message);
             }
         }
     }

@@ -11,7 +11,7 @@ try {
   const uins: string[] = Object.keys(config.bots);
 
   for (const uin of uins) {
-    const path = resolve(cwd, `data/bots/${uin}/config.js`);
+    const path = resolve(cwd, `data/bots/${uin}/config.json`);
 
     setting.set(Number(uin), require(path))
   }

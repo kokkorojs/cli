@@ -6,10 +6,10 @@ const util_1 = require("./util");
 const config_1 = require("./config");
 const setting = new Map();
 try {
-    const config = config_1.getConfig();
+    const config = (0, config_1.getConfig)();
     const uins = Object.keys(config.bots);
     for (const uin of uins) {
-        const path = path_1.resolve(util_1.cwd, `data/bots/${uin}/config.js`);
+        const path = (0, path_1.resolve)(util_1.cwd, `data/bots/${uin}/config.json`);
         setting.set(Number(uin), require(path));
     }
 }

@@ -3,14 +3,15 @@ import { Client, GroupInfo } from 'oicq'
 import { Dirent } from 'fs'
 import { writeFile, readdir, mkdir } from 'fs/promises'
 
-import { cwd, error, logger } from './util'
+import { cwd, tips, logger } from './util'
 import { IConfig, ISetting } from '..'
 
 // 所有插件实例
 const plugins = new Map<string, Plugin>()
+const { error } = tips;
 
 class PluginError extends Error {
-  name = "PluginError"
+  name = "PluginError";
 }
 
 // #region Plugin 类
@@ -28,7 +29,7 @@ class Plugin {
     let config: IConfig;
     let set: Set<string>;
 
-    const dir = join(bot.dir, 'config.js');
+    const dir = join(bot.dir, 'config.json');
 
     try {
       config = require(dir);
@@ -60,7 +61,7 @@ class Plugin {
       config[group_id] = default_setting;
     });
 
-    return writeFile(dir, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+    return writeFile(dir, `${JSON.stringify(config, null, 2)}`);
   }
 
   async enable(bot: Client) {
@@ -81,8 +82,10 @@ class Plugin {
 
       await this._editBotPluginCache(bot, "add");
       this.binds.add(bot);
-    } catch (e) {
-      throw new PluginError(`启用插件时遇到错误\n${error} ${e.message}`);
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new PluginError(`启用插件时遇到错误\n${error} ${message}`);
     }
   }
 
@@ -103,8 +106,10 @@ class Plugin {
 
       await this._editBotPluginCache(bot, "delete");
       this.binds.delete(bot);
-    } catch (e) {
-      throw new PluginError(`禁用插件时遇到错误\n${error} ${e.message}`)
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new PluginError(`禁用插件时遇到错误\n${error} ${message}`)
     }
   }
 
@@ -141,8 +146,10 @@ class Plugin {
       require(this.path);
 
       for (let bot of binded) await this.enable(bot);
-    } catch (e) {
-      throw new PluginError(`重启插件时遇到错误\n${error} ${e.message}`);
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new PluginError(`重启插件时遇到错误\n${error} ${message}`);
     }
   }
 }
@@ -184,8 +191,10 @@ async function importPlugin(name: string): Promise<Plugin> {
 
     plugins.set(name, plugin);
     return plugin
-  } catch (err) {
-    throw new PluginError(`导入插件失败，不合法的 package\n${error} ${err.message}`);
+  } catch (error) {
+    const { message } = error as Error;
+
+    throw new PluginError(`导入插件失败，不合法的 package\n${error} ${message}`);
   }
 }
 // #endregion
@@ -318,7 +327,7 @@ async function findAllPlugins() {
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
-  const dir = join(bot.dir, 'config.js');
+  const dir = join(bot.dir, 'config.json');
 
   try {
     const config = require(dir);
@@ -329,7 +338,9 @@ async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
 
         await plugin.enable(bot);
       } catch (error) {
-        logger.error(error.message)
+        const { message } = error as Error;
+
+        logger.error(message);
       }
     }
   } catch { }

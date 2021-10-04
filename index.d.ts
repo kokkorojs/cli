@@ -13,12 +13,12 @@ interface GlobalConfig {
       // bot 主人
       masters: number[];
       // 自动登录
-      autologin: boolean;
+      auto_login: boolean;
       // 管理指令前缀，默认为 ">"
       prefix: string;
       // 1-5
       platform: ConfBot["platform"];
-      // off, error, warn, info, debug, trace
+      // off, error ,warn, info, debug, trace
       log_level: ConfBot["log_level"];
     }
   }

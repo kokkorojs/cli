@@ -1,33 +1,49 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addBot = exports.parseCommandline = exports.setConfig = exports.getConfig = void 0;
+exports.setConfig = exports.addBot = exports.parseCommandline = exports.getConfig = void 0;
 const path_1 = require("path");
 const promises_1 = require("fs/promises");
 const util_1 = require("./util");
-const path = path_1.resolve(util_1.cwd, 'kokkoro.config.js');
-const config = require(path);
+const config_path = (0, path_1.resolve)(util_1.cwd, 'kkrconfig.json');
+const config = require(config_path);
+function writeConfig() {
+    return (0, promises_1.writeFile)(config_path, `${JSON.stringify(config, null, 2)}`);
+}
 function getConfig() {
     return config;
 }
 exports.getConfig = getConfig;
-function writeConfig() {
-    return promises_1.writeFile(path, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+function parseCommandline(commandline) {
+    const split = commandline.split(" ");
+    let cmd = "", params = [];
+    for (let v of split) {
+        if (v === "")
+            continue;
+        if (!cmd)
+            cmd = v;
+        else
+            params.push(v);
+    }
+    return {
+        cmd, params
+    };
 }
+exports.parseCommandline = parseCommandline;
 async function addBot(uin, master) {
-    const bots = config.bots;
+    const { bots } = config;
     bots[uin] = {
-        masters: [master], autologin: true, prefix: '>', platform: 5, log_level: 'info'
+        masters: [master], auto_login: true, prefix: '>', platform: 5, log_level: 'info'
     };
     await writeConfig();
 }
 exports.addBot = addBot;
 async function openAutoLogin(self_id) {
-    config.bots[self_id].autologin = true;
+    config.bots[self_id].auto_login = true;
     await writeConfig();
     return `Success: 已开启账号自动登录`;
 }
 async function closeAutoLogin(self_id) {
-    config.bots[self_id].autologin = false;
+    config.bots[self_id].auto_login = false;
     await writeConfig();
     return `Success: 已关闭账号自动登录`;
 }
@@ -117,19 +133,3 @@ async function setConfig(params, self_id) {
     return ret;
 }
 exports.setConfig = setConfig;
-function parseCommandline(commandline) {
-    const split = commandline.split(' ');
-    let cmd = '', params = [];
-    for (let val of split) {
-        if (val === '')
-            continue;
-        if (!cmd)
-            cmd = val;
-        else
-            params.push(val);
-    }
-    return {
-        cmd, params
-    };
-}
-exports.parseCommandline = parseCommandline;

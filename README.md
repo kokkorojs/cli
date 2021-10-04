@@ -11,7 +11,7 @@
 
 ## 介绍
 
-使用 ts 重构后代码风格参考了 [abot](https://github.com/takayama-lily/abot) ，并将 kokkoro 的原有特性做了整合：
+使用 ts 重构后代码风格参考了 [abot](https://github.com/takayama-lily/abot) ，并将 [yumemi](https://github.com/dcyuki/yumemi_bot) 的原有特性做了整合：
 
 - 多群配置管理，所有插件参数针对不同群聊均支持自定义修改
 - 插件指令定制，启用的插件都可以编写配置文件独立修改指令

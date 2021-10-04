@@ -1,40 +1,58 @@
-import { resolve } from 'path'
-import { ConfBot } from 'oicq'
-import { writeFile } from 'fs/promises'
+import { resolve } from 'path';
+import { writeFile } from 'fs/promises';
 
-import { cwd } from './util'
-import { GlobalConfig } from '..'
+import { cwd } from './util';
+import { GlobalConfig } from '..';
+import { ConfBot } from 'oicq';
 
-const path = resolve(cwd, 'kokkoro.config.js');
-const config: GlobalConfig = require(path);
+const config_path = resolve(cwd, 'kkrconfig.json');
+const config: GlobalConfig = require(config_path);
+
+function writeConfig() {
+  return writeFile(config_path, `${JSON.stringify(config, null, 2)}`);
+}
 
 function getConfig() {
   return config
 }
 
-function writeConfig() {
-  return writeFile(path, `module.exports = ${JSON.stringify(config, null, 2).replace(/"([^"]+)":/g, '$1:')}`);
+function parseCommandline(commandline: string) {
+  const split = commandline.split(" ");
+
+  let cmd = "", params: string[] = [];
+
+  for (let v of split) {
+    if (v === "") continue;
+
+    if (!cmd)
+      cmd = v
+    else
+      params.push(v)
+  }
+  return {
+    cmd, params
+  }
 }
 
 async function addBot(uin: number, master: number) {
-  const bots = config.bots;
+  const { bots } = config;
 
   bots[uin] = {
-    masters: [master], autologin: true, prefix: '>', platform: 5, log_level: 'info'
+    masters: [master], auto_login: true, prefix: '>', platform: 5, log_level: 'info'
   }
 
   await writeConfig();
 }
 
 async function openAutoLogin(self_id: number) {
-  config.bots[self_id].autologin = true;
+  config.bots[self_id].auto_login = true;
 
   await writeConfig();
   return `Success: 已开启账号自动登录`
 }
 
 async function closeAutoLogin(self_id: number) {
-  config.bots[self_id].autologin = false;
+  config.bots[self_id].auto_login = false;
 
   await writeConfig();
   return `Success: 已关闭账号自动登录`
@@ -102,7 +120,6 @@ async function setDefaultLogLevel(log_level: ConfBot['log_level'], self_id: numb
   return `Success: log_level '${old_log_level}' >>> '${config.bots[self_id].log_level}'`
 }
 
-
 async function setConfig(params: ReturnType<typeof parseCommandline>['params'], self_id: number) {
   if (!params[0]) return `当前 bot 全局配置：\n${JSON.stringify(config.bots[self_id], null, 2)}`
 
@@ -148,23 +165,6 @@ async function setConfig(params: ReturnType<typeof parseCommandline>['params'], 
   return ret;
 }
 
-function parseCommandline(commandline: string) {
-  const split = commandline.split(' ');
-  let cmd = '', params: string[] = [];
-
-  for (let val of split) {
-    if (val === '')
-      continue
-    if (!cmd)
-      cmd = val
-    else
-      params.push(val)
-  }
-  return {
-    cmd, params
-  }
-}
-
 export {
-  getConfig, setConfig, parseCommandline, addBot
+  getConfig, parseCommandline, addBot, setConfig
 }
