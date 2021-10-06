@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCommand = exports.image = exports.at = exports.tips = exports.colors = exports.platform = exports.uptime = exports.cwd = exports.lowdb = exports.schedule = exports.logger = exports.axios = void 0;
+exports.cqcode = exports.checkCommand = exports.tips = exports.colors = exports.platform = exports.uptime = exports.cwd = exports.lowdb = exports.schedule = exports.logger = exports.axios = void 0;
 const axios_1 = __importDefault(require("axios"));
 exports.axios = axios_1.default;
 const lowdb_1 = __importDefault(require("lowdb"));
@@ -89,7 +89,6 @@ function image(url, flash = false) {
         });
     });
 }
-exports.image = image;
 /**
  * @description 生成 at 成员 CQ 码
  * @param qq
@@ -98,4 +97,7 @@ exports.image = image;
 function at(qq) {
     return `[CQ:at,qq=${qq}]`;
 }
-exports.at = at;
+const cqcode = {
+    image, at
+};
+exports.cqcode = cqcode;

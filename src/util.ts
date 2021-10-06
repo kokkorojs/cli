@@ -97,8 +97,12 @@ function at(qq: number): string {
   return `[CQ:at,qq=${qq}]`
 }
 
+const cqcode = {
+  image, at
+};
+
 export {
   axios, logger, schedule, lowdb,
   cwd, uptime, platform, colors, tips,
-  at, image, checkCommand,
+  checkCommand, cqcode,
 }

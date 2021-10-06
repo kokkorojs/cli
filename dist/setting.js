@@ -23,7 +23,7 @@ exports.getSetting = getSetting;
 // #dregion 写入群聊插件设置
 async function setSetting(params, self_id, group_id) {
     if (!params[0])
-        return `"${group_id}" ${JSON.stringify(setting.get(self_id)?.[group_id], null, 2)}`;
+        return `"${group_id}": ${JSON.stringify(setting.get(self_id)?.[group_id] || {}, null, 2)}`;
     return 'setSetting';
 }
 exports.setSetting = setSetting;
