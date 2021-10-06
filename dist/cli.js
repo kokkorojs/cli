@@ -42,7 +42,7 @@ const questions = [
         name: 'plugins',
         message: 'Select the plugins to load',
         choices: [
-            { title: 'kokkoro-plugin-setu', value: 'kokkoro-plugin-setu' },
+            { title: 'kokkoro-plugin-setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的' },
             { title: 'kokkoro-plugin-gobang', value: 'kokkoro-plugin-gobang', disabled: true },
             { title: 'kokkoro-plugin-hitokoto', value: 'kokkoro-plugin-hitokoto', disabled: true }
         ],

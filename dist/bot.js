@@ -323,6 +323,13 @@ const cmdHanders = {
             return await (0, setting_1.setSetting)(params, self_id, group_id);
         },
         //#endregion
+        //#region list
+        async list(params, event) {
+            console.log(11111);
+            const { self_id, group_id } = event;
+            return (0, setting_1.getList)(self_id, group_id);
+        },
+        //#endregion
     },
     private: {
         //#region help

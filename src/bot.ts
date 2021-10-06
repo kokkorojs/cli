@@ -6,7 +6,7 @@ import { Client, ConfBot, createClient, GroupMessageEventData, MemberBaseInfo, M
 
 import help from './help';
 import { cwd } from './util';
-import { setSetting } from './setting';
+import { getList, setSetting } from './setting';
 import { addBot, getConfig, parseCommandline, setConfig } from './config';
 import { deletePlugin, disable, disableAll, enable, findAllPlugins, restartPlugin, restorePlugins } from './plugin';
 
@@ -374,6 +374,15 @@ const cmdHanders: {
 
       const { self_id, group_id } = event as GroupMessageEventData;
       return await setSetting(params, self_id, group_id)
+    },
+    //#endregion
+
+    //#region list
+    async list(params, event) {
+      console.log(11111)
+      const { self_id, group_id } = event as GroupMessageEventData;
+
+      return getList(self_id, group_id);
     },
     //#endregion
   },

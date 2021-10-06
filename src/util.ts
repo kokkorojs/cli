@@ -1,6 +1,6 @@
 import axios from 'axios';
 import low from 'lowdb';
-import FileSync from 'lowdb/adapters/FileSync'
+import FileSync from 'lowdb/adapters/FileSync';
 import schedule from 'node-schedule';
 import { getLogger, Logger } from 'log4js';
 
@@ -13,7 +13,7 @@ axios.defaults.timeout = 10000;
  */
 const lowdb = {
   low, FileSync
-}
+};
 
 // log4js
 const logger: Logger = getLogger('[kokkoro log]');
