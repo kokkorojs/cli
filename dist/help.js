@@ -8,9 +8,8 @@ const KOKKORO_VERSION = version;
 exports.KOKKORO_VERSION = KOKKORO_VERSION;
 const HELP_BOT = `--------------------
 >bot ##列出所有机器人实例
->bot login <uin> ##登录新机器人
->bot off <uin> ##机器人离线
->bot on <uin> ##重新上线
+>login <uin> ##登录机器人
+>logout <uin> ##机器人离线
 >bot del <uin> ##删除离线机器人
 >bot help ##查看帮助
 ※ <uin> 代表QQ账号

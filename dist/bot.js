@@ -475,6 +475,43 @@ const cmdHanders = {
             }
         },
         //#endregion
+        //#region login
+        async login(params, event) {
+            const uin = Number(params[0]);
+            switch (true) {
+                case all_bot.has(uin):
+                    const bot = all_bot.get(uin);
+                    // 判断账号是否已登录
+                    if (bot?.isOnline()) {
+                        return `Error：已经登录过这个号了`;
+                    }
+                    else {
+                        bot?.login();
+                        return `Sucess：已将该账号上线`;
+                    }
+                case !uin:
+                    return `Error：请输入账号`;
+            }
+            const bot = await createBot(uin, event, this);
+            bot?.once('system.online', function () {
+                // 写入数据
+                (0, config_1.addBot)(uin, event.user_id);
+                bindMasterEvents(bot);
+                event.reply('>登录成功');
+            });
+            return `>开始登录流程，账号：${uin}`;
+        },
+        //#endregion
+        //#region logout
+        async logout(params, event) {
+            const uin = Number(params[0]);
+            const bot = all_bot.get(uin);
+            if (!bot)
+                return `Error: 账号输入错误，无法找到该实例`;
+            await bot.logout();
+            return `Success：已将该账号下线`;
+        },
+        //#endregion
         //#region bot
         async bot(params, event) {
             const msg = [`当前已登录账号：`];
@@ -488,34 +525,10 @@ const cmdHanders = {
             if (cmd === 'help') {
                 return help_1.default.bot;
             }
-            if (cmd === 'login') {
-                switch (true) {
-                    case all_bot.has(uin):
-                        return `Error：已经登录过这个号了`;
-                    case !uin:
-                        return `Error：请输入账号`;
-                }
-                const bot = await createBot(uin, event, this);
-                bot?.once('system.online', function () {
-                    // 写入数据
-                    (0, config_1.addBot)(uin, event.user_id);
-                    bindMasterEvents(bot);
-                    event.reply('>登录成功');
-                });
-                return `>开始登录流程，账号：${uin}`;
-            }
             const bot = all_bot.get(uin);
             if (!bot)
                 return `Error: 账号输入错误，无法找到该实例`;
-            if (cmd === 'off') {
-                await bot.logout();
-                return `Success：已将该账号下线`;
-            }
-            else if (cmd === 'on') {
-                bot.login();
-                return `Sucess：已将该账号上线`;
-            }
-            else if (cmd === 'del') {
+            if (cmd === 'del') {
                 if (bot.isOnline()) {
                     return `Error：此机器人正在登录中，请先离线再删除`;
                 }
