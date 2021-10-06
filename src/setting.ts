@@ -34,11 +34,11 @@ async function setSetting(params: ReturnType<typeof parseCommandline>['params'],
 // #dregion 获取群聊插件列表
 async function getList(self_id: number, group_id: number): Promise<string> {
   const { setting } = all_setting.get(self_id)?.[group_id] || { setting: {} };
-  const message = ['"list": {'];
+  const message = ['// 如要查看更多信息可输入 >setting\n"list": {'];
 
   for (const key in setting) message.push(`  "${key}": ${setting[key].switch}`);
 
-  message.push('}\n// 如要查看更多信息可输入 >setting');
+  message.push('}');
   return message.join('\n');
 }
 // #endregion

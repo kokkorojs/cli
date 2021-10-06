@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.restorePlugins = exports.findAllPlugins = exports.disableAll = exports.disable = exports.enable = exports.restartPlugin = exports.deletePlugin = void 0;
 const path_1 = require("path");
 const promises_1 = require("fs/promises");
 const util_1 = require("./util");
@@ -187,7 +186,6 @@ async function deletePlugin(name) {
     await checkImported(name).goDie();
     plugins.delete(name);
 }
-exports.deletePlugin = deletePlugin;
 // #endregion
 // #region 重启插件
 /**
@@ -198,7 +196,6 @@ exports.deletePlugin = deletePlugin;
 function restartPlugin(name) {
     return checkImported(name).restart();
 }
-exports.restartPlugin = restartPlugin;
 // #endregion
 // #region 启用插件
 /**
@@ -210,7 +207,6 @@ async function enable(name, bot) {
     const plugin = await importPlugin(name);
     return plugin.enable(bot);
 }
-exports.enable = enable;
 // #endregion
 // #region 禁用插件
 /**
@@ -222,7 +218,6 @@ exports.enable = enable;
 function disable(name, bot) {
     return checkImported(name).disable(bot);
 }
-exports.disable = disable;
 // #endregion
 // #region 禁用所有插件
 /**
@@ -237,7 +232,6 @@ async function disableAll(bot) {
         catch { }
     }
 }
-exports.disableAll = disableAll;
 // #endregion
 // #region 检索所有可用插件
 /**
@@ -282,7 +276,6 @@ async function findAllPlugins() {
         plugin_modules, node_modules, plugins
     };
 }
-exports.findAllPlugins = findAllPlugins;
 // #endregion
 // #region bot 启动后恢复它原先绑定的插件
 /**
@@ -307,4 +300,7 @@ async function restorePlugins(bot) {
     catch { }
     return plugins;
 }
-exports.restorePlugins = restorePlugins;
+// #endregion
+exports.default = {
+    deletePlugin, restartPlugin, enable, disable, disableAll, findAllPlugins, restorePlugins
+};

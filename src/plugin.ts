@@ -349,6 +349,6 @@ async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
 }
 // #endregion
 
-export {
+export default {
   deletePlugin, restartPlugin, enable, disable, disableAll, findAllPlugins, restorePlugins
 }

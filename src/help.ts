@@ -15,8 +15,8 @@ const HELP_BOT = `--------------------
 
 const HELP_PLUG = `--------------------
 >plug ##列出全部插件及启用的机器人
->plug on <name> ##当前bot启用该插件
->plug off <name> ##当前bot禁用该插件
+>enable <name> ##当前bot启用该插件
+>disable <name> ##当前bot禁用该插件
 >plug on-all <name> ##全bot启用该插件
 >plug off-all <name> ##全bot禁用该插件
 >plug del <name> ##删除一个插件
@@ -36,13 +36,14 @@ const HELP_CONF = `--------------------
 >conf log_level <param> ##修改默认日志等级
 >conf help ##查看帮助
 ※ <uin> 代表QQ账号
-`
+`;
 
 const HELP_SETTIING = `--------------------
->setting  ##列出当前群聊插件设定
+>list ##列出当前群聊插件列表
+>setting  ##列出当前群聊设定
 >setting default <plug>  ##初始化插件设置（开发中）
 ※ <plug> 代表插件名称
-`
+`;
 
 const help: { [k: string]: string } = {
   KOKKORO_VERSION,
@@ -56,7 +57,7 @@ ${HELP_BOT + HELP_PLUG + HELP_CONF + HELP_SETTIING}--------------------
 >set ##设置当前机器人的运行时参数
 >restart ##重启当前程序
 >shutdown ##退出当前程序`
-}
+};
 
 export default help;
 export {

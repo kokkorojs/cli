@@ -5,10 +5,10 @@ import { writeFile, readFile } from 'fs/promises';
 import { Client, ConfBot, createClient, GroupMessageEventData, MemberBaseInfo, MessageEventData, OfflineEventData, PrivateMessageEventData } from 'oicq';
 
 import help from './help';
+import plugin from './plugin';
 import { cwd } from './util';
 import { getList, setSetting } from './setting';
 import { addBot, getConfig, parseCommandline, setConfig } from './config';
-import { deletePlugin, disable, disableAll, enable, findAllPlugins, restartPlugin, restorePlugins } from './plugin';
 
 // 维护组 QQ
 const admin = [2225151531];
@@ -341,10 +341,10 @@ async function bindMasterEvents(bot: Client) {
   bot.on('message', onMessage);
 
   let number = 0;
-  const plugins = await restorePlugins(bot);
+  const plugins = await plugin.restorePlugins(bot);
 
   for (let [_, plugin] of plugins) {
-    if (plugin.binds.has(bot)) ++number
+    if (plugin.binds.has(bot)) ++number;
   }
   setTimeout(() => {
     broadcastOne(bot, `启动成功，启用了 ${number} 个插件，发送 ${getConfig().bots[uin].prefix}help 可以查询 bot 相关指令`)
@@ -373,13 +373,12 @@ const cmdHanders: {
       if (params[0] === 'help') { return help.setting }
 
       const { self_id, group_id } = event as GroupMessageEventData;
-      return await setSetting(params, self_id, group_id)
+      return await setSetting(params, self_id, group_id);
     },
     //#endregion
 
     //#region list
     async list(params, event) {
-      console.log(11111)
       const { self_id, group_id } = event as GroupMessageEventData;
 
       return getList(self_id, group_id);
@@ -392,6 +391,7 @@ const cmdHanders: {
       return help[params[0]] || help.default
     },
     //#endregion
+
     //#region conf
     async conf(params, event) {
       if (params[0] === 'help') {
@@ -401,6 +401,7 @@ const cmdHanders: {
       return await setConfig(params, event.self_id)
     },
     //#endregion
+
     //#region restart
     async restart() {
       setTimeout(() => {
@@ -411,11 +412,34 @@ const cmdHanders: {
       return `正在重启程序...`;
     },
     //#endregion
+
     //#region shutdown
     async shutdown() {
       setTimeout(() => process.exit(0), 3000);
 
       return `正在结束程序...`
+    },
+    //#endregion
+
+    //#region enable
+    async enable(params, event) {
+      const name = params[0];
+      const uin = event.self_id;
+      const bot = all_bot.get(uin) as Client;
+
+      await plugin.enable(name, bot);
+      return `${bot.nickname} (${uin}) 启用插件成功`;
+    },
+    //#endregion
+
+    //#region disable
+    async disable(params, event) {
+      const name = params[0];
+      const uin = event.self_id;
+      const bot = all_bot.get(uin) as Client;
+
+      await plugin.disable(name, bot);
+      return `${bot.nickname} (${uin}) 禁用插件成功`;
     },
     //#endregion
 
@@ -425,7 +449,7 @@ const cmdHanders: {
 
       if (!cmd) {
         try {
-          const { plugin_modules, node_modules, plugins } = await findAllPlugins();
+          const { plugin_modules, node_modules, plugins } = await plugin.findAllPlugins();
           const msg = ['可用插件模块列表：'];
 
           for (let name of [...plugin_modules, ...node_modules]) {
@@ -456,41 +480,27 @@ const cmdHanders: {
       let msg = '';
 
       try {
-        if (!name)
-          throw new Error('请输入插件名称')
+        if (!name) throw new Error('请输入插件名称');
+
         switch (cmd) {
-          case 'on':
-            if (!bot) {
-              throw new Error('账号输入错误，无法找到该实例')
-            }
-            await enable(name, bot)
-            msg = `${bot.nickname} (${uin}) 启用插件成功`
-            break
-          case 'off':
-            if (!bot) {
-              throw new Error('账号输入错误，无法找到该实例')
-            }
-            await disable(name, bot)
-            msg = `${bot.nickname} (${uin}) 禁用插件成功`
-            break
           case 'on-all':
             for (let [_, bot] of all_bot) {
-              await enable(name, bot)
+              await plugin.enable(name, bot)
             }
             msg = '全部机器人启用插件成功'
             break
           case 'off-all':
             for (let [_, bot] of all_bot) {
-              await disable(name, bot)
+              await plugin.disable(name, bot)
             }
             msg = '全部机器人禁用插件成功'
             break
           case 'del':
-            await deletePlugin(name)
+            await plugin.deletePlugin(name)
             msg = '卸载插件成功'
             break
           case 'restart':
-            await restartPlugin(name)
+            await plugin.restartPlugin(name)
             msg = '重启插件成功'
             break
           default:
@@ -589,7 +599,7 @@ const cmdHanders: {
         if (bot.isOnline()) {
           return `Error：此机器人正在登录中，请先离线再删除`
         }
-        await disableAll(bot)
+        await plugin.disableAll(bot)
         all_bot.delete(uin)
         return `Sucess：已删除此机器人实例`
       } else {
