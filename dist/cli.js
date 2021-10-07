@@ -115,7 +115,6 @@ const questions = [
 
 -------------------------------------------------------------------------------------`;
         console.log(cyan(wellcome));
-        util_2.logger.level = 'all';
         util_2.logger.mark(`----------`);
         util_2.logger.mark(`Package Version: kokkoro@${help_1.KOKKORO_VERSION} (Released on ${help_1.KOKKORO_UPDAY})`);
         util_2.logger.mark(`View Changelogs：https://github.com/dcyuki/kokkoro/releases`);

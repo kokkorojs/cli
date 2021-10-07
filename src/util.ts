@@ -17,6 +17,7 @@ const lowdb = {
 
 // log4js
 const logger: Logger = getLogger('[kokkoro log]');
+logger.level = 'all';
 
 const cwd = process.cwd();
 const uptime = process.uptime();

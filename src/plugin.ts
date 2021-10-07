@@ -49,7 +49,7 @@ class Plugin {
       const default_setting = {
         name: value.group_name,
         setting: {
-          [this.name]: Object.assign({ lock: false, switch: false }, this.setting),
+          [this.name]: Object.assign({ lock: false, switch: true }, this.setting),
         },
       }
 

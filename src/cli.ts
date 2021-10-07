@@ -124,7 +124,6 @@ const questions: PromptObject[] = [
 -------------------------------------------------------------------------------------`;
       console.log(cyan(wellcome))
 
-      logger.level = 'all';
       logger.mark(`----------`);
       logger.mark(`Package Version: kokkoro@${KOKKORO_VERSION} (Released on ${KOKKORO_UPDAY})`);
       logger.mark(`View Changelogs：https://github.com/dcyuki/kokkoro/releases`);
