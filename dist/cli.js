@@ -42,9 +42,11 @@ const questions = [
         name: 'plugins',
         message: 'Select the plugins to load',
         choices: [
+            { title: 'kokkoro-plugin-og', value: 'kokkoro-plugin-og', description: '发送网页 html 的 og 信息' },
+            { title: 'kokkoro-plugin-gvg', value: 'kokkoro-plugin-gvg', description: '会战插件（我不想打公会战）', disabled: true },
             { title: 'kokkoro-plugin-setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的' },
-            { title: 'kokkoro-plugin-gobang', value: 'kokkoro-plugin-gobang', disabled: true },
-            { title: 'kokkoro-plugin-hitokoto', value: 'kokkoro-plugin-hitokoto', disabled: true }
+            { title: 'kokkoro-plugin-gobang', value: 'kokkoro-plugin-gobang', description: '五子棋小游戏', disabled: true },
+            { title: 'kokkoro-plugin-hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', disabled: true },
         ],
         warn: '- 近期重构中，当前插件暂时不可用',
     }
