@@ -71,19 +71,27 @@ const questions = [
             port,
             bots: {
                 [uin]: {
-                    masters: masters.map(Number), auto_login: true, prefix: '>', platform: 5, log_level: 'info'
+                    prefix: '>',
+                    auto_login: true,
+                    login_mode: 'qrcode',
+                    masters: masters.map(Number),
+                    config: {
+                        platform: 5,
+                        log_level: 'info',
+                    }
                 }
             }
         };
         (0, promises_1.writeFile)(`kkrconfig.json`, `${JSON.stringify(config, null, 2)}`)
             .then(async () => {
+            !(0, fs_1.existsSync)((0, path_1.join)(util_2.cwd, `/plugins`)) && await (0, promises_1.mkdir)((0, path_1.join)(util_2.cwd, `/plugins`));
             console.log(`\n${success} created config file ${cyan(`'${config_path}'`)}`);
+            const promiseExec = (0, util_1.promisify)(child_process_1.exec);
             const all_plugin = ['kokkoro', ...plugins];
             const plugin_length = all_plugin.length;
             for (let i = 0; i < plugin_length; i++) {
                 const plugin = all_plugin[i];
                 const spinner = (0, ora_1.default)(`Install ${plugin}`).start();
-                const promiseExec = (0, util_1.promisify)(child_process_1.exec);
                 try {
                     await promiseExec(`npm i -D ${plugin}`);
                     spinner.succeed();
@@ -119,7 +127,7 @@ const questions = [
         console.log(cyan(wellcome));
         util_2.logger.mark(`----------`);
         util_2.logger.mark(`Package Version: kokkoro@${help_1.KOKKORO_VERSION} (Released on ${help_1.KOKKORO_UPDAY})`);
-        util_2.logger.mark(`View Changelogs：https://github.com/dcyuki/kokkoro/releases`);
+        util_2.logger.mark(`View Changelogs：${help_1.KOKKORO_CHANGELOGS}`);
         util_2.logger.mark(`----------`);
         util_2.logger.mark(`项目启动完成，开始登录账号`);
         require('./startup');

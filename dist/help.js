@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KOKKORO_UPDAY = exports.KOKKORO_VERSION = void 0;
-const { upday, version } = require('../package.json');
+exports.KOKKORO_CHANGELOGS = exports.KOKKORO_UPDAY = exports.KOKKORO_VERSION = void 0;
+const { upday, version, changelogs } = require('../package.json');
 const KOKKORO_UPDAY = upday;
 exports.KOKKORO_UPDAY = KOKKORO_UPDAY;
 const KOKKORO_VERSION = version;
 exports.KOKKORO_VERSION = KOKKORO_VERSION;
+const KOKKORO_CHANGELOGS = changelogs;
+exports.KOKKORO_CHANGELOGS = KOKKORO_CHANGELOGS;
 const HELP_BOT = `--------------------
 >bot ##列出所有机器人实例
 >login <uin> ##登录机器人

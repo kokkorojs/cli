@@ -4,7 +4,8 @@ import { Dirent } from 'fs'
 import { writeFile, readdir, mkdir } from 'fs/promises'
 
 import { cwd, tips, logger } from './util'
-import { IConfig, ISetting } from '..'
+import { IGroup, ISetting } from '..'
+import { getSetting } from './setting'
 
 // 所有插件实例
 const plugins = new Map<string, Plugin>()
@@ -26,21 +27,12 @@ class Plugin {
   }
 
   protected async _editBotPluginCache(bot: Client, method: 'add' | 'delete') {
-    let config: IConfig;
-    let set: Set<string>;
-
-    const dir = join(bot.dir, 'config.json');
-
-    try {
-      config = require(dir);
-      set = new Set(config.plugin);
-    } catch {
-      config = { plugin: [] };
-      set = new Set;
-    }
+    const setting = getSetting(bot.uin) as ISetting;
+    const set: Set<string> = new Set(setting.all_plugin);
+    const setting_path = join(bot.dir, 'setting.json');
 
     set[method](this.name);
-    config.plugin = [...set];
+    setting.all_plugin = [...set];
 
     // 写入群配置
     const { gl } = bot;
@@ -48,7 +40,7 @@ class Plugin {
     gl.forEach((value: GroupInfo, group_id: number) => {
       const default_setting = {
         name: value.group_name,
-        setting: {
+        plug: {
           [this.name]: Object.assign({ lock: false, switch: true }, this.setting),
         },
       }
@@ -61,7 +53,7 @@ class Plugin {
       config[group_id] = default_setting;
     });
 
-    return writeFile(dir, `${JSON.stringify(config, null, 2)}`);
+    return writeFile(setting_path, `${JSON.stringify(setting, null, 2)}`);
   }
 
   async enable(bot: Client) {
@@ -327,7 +319,7 @@ async function findAllPlugins() {
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot: Client): Promise<Map<string, Plugin>> {
-  const dir = join(bot.dir, 'config.json');
+  const dir = join(bot.dir, 'setting.json');
 
   try {
     const config = require(dir);

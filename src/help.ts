@@ -1,7 +1,8 @@
-const { upday, version } = require('../package.json');
+const { upday, version, changelogs } = require('../package.json');
 
 const KOKKORO_UPDAY = upday;
 const KOKKORO_VERSION = version;
+const KOKKORO_CHANGELOGS = changelogs;
 
 const HELP_BOT = `--------------------
 >bot ##列出所有机器人实例
@@ -60,5 +61,5 @@ ${HELP_BOT + HELP_PLUG + HELP_CONF + HELP_SETTIING}--------------------
 
 export default help;
 export {
-  KOKKORO_VERSION, KOKKORO_UPDAY
+  KOKKORO_VERSION, KOKKORO_UPDAY, KOKKORO_CHANGELOGS
 }

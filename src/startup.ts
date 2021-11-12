@@ -1,5 +1,5 @@
 import { Client } from "oicq";
-import { bindMasterEvents, linkStart } from "./bot";
+import { linkStart, bindMasterEvents } from "./bot";
 import { logger } from "./util";
 
 (async () => {
@@ -12,7 +12,7 @@ import { logger } from "./util";
   all_bot.forEach(bot => {
     bot.once('system.online', () => {
       bindMasterEvents(bot);
-      bot.logger.info(`可发送 >help 给机器人查看指令帮助`);
+      bot.logger.info(`可发送 ">help" 给机器人查看指令帮助`);
     });
   });
 })();

@@ -1,42 +1,58 @@
 import { resolve } from 'path'
+import { writeFile } from 'fs/promises';
 
-import { cwd } from './util'
+import { cwd } from './util';
 import { GlobalConfig, ISetting } from '..';
-import { getConfig, parseCommandline } from './config';
+import { getGlobalConfig, parseCommandline } from './config';
 
 const all_setting: Map<number, ISetting> = new Map();
 
 try {
-  const config: GlobalConfig = getConfig();
-  const uins: string[] = Object.keys(config.bots);
+  const global_config: GlobalConfig = getGlobalConfig();
+  const uins: string[] = Object.keys(global_config.bots);
 
   for (const uin of uins) {
-    const path = resolve(cwd, `data/bots/${uin}/config.json`);
+    const setting_path = resolve(cwd, `data/bots/${uin}/setting.json`);
 
-    all_setting.set(Number(uin), require(path))
+    all_setting.set(Number(uin), require(setting_path))
   }
 } catch { }
 
-// #dregion 列出当前群聊插件设置
-function getSetting() {
+// #dregion 列出所有群聊插件设置
+function getAllSetting() {
   return all_setting
 }
 // #endregion
 
-// #dregion 写入群聊插件设置
-async function setSetting(params: ReturnType<typeof parseCommandline>['params'], self_id: number, group_id: number): Promise<string> {
-  if (!params[0]) return `"${group_id}": ${JSON.stringify(all_setting.get(self_id)?.[group_id] || {}, null, 2)}`
-
-  return 'setSetting'
+// #dregion 列出所有群聊插件设置
+function getSetting(uin: number) {
+  return all_setting.get(uin)
 }
 // #endregion
 
+// #dregion 写入群聊插件设置
+function setSetting(uin: number) {
+  const setting_path = resolve(cwd, `data/bots/${uin}/setting.json`);
+  const setting = all_setting.get(uin);
+
+  return writeFile(setting_path, `${JSON.stringify(setting, null, 2)}`);
+}
+// #endregion
+
+//#dregion handleSetting
+async function handleSetting(params: ReturnType<typeof parseCommandline>['params'], self_id: number, group_id: number): Promise<string> {
+  if (!params[0]) return `"${group_id}": ${JSON.stringify(all_setting.get(self_id)?.[group_id] || {}, null, 2)}`
+
+  return 'handleSetting'
+}
+//#endregion
+
 // #dregion 获取群聊插件列表
 async function getList(self_id: number, group_id: number): Promise<string> {
-  const { setting } = all_setting.get(self_id)?.[group_id] || { setting: {} };
+  const { plugin } = all_setting.get(self_id)?.[group_id] || { plugin: {} };
   const message = ['// 如要查看更多信息可输入 >setting\n"list": {'];
 
-  for (const key in setting) message.push(`  "${key}": ${setting[key].switch}`);
+  for (const key in plugin) message.push(`  "${key}": ${plugin[key].switch}`);
 
   message.push('}');
   return message.join('\n');
@@ -44,5 +60,5 @@ async function getList(self_id: number, group_id: number): Promise<string> {
 // #endregion
 
 export {
-  getSetting, setSetting, getList
+  getAllSetting, getSetting, handleSetting, getList
 }

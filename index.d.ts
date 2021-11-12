@@ -1,5 +1,5 @@
 import { Logger } from 'log4js';
-import { Client, ConfBot } from "oicq";
+import { Client, Config } from "oicq";
 
 interface GlobalConfig {
   // 服务端口
@@ -10,36 +10,37 @@ interface GlobalConfig {
   bots: {
     // uin 账号
     [uin: number]: {
+      // 指令前缀，默认为 '>'
+      prefix: string;
+      // 自动登录，默认 true
+      auto_login: boolean;
+      // 登录模式，默认 qrcode
+      login_mode: 'qrcode' | 'password';
       // bot 主人
       masters: number[];
-      // 自动登录
-      auto_login: boolean;
-      // 管理指令前缀，默认为 ">"
-      prefix: string;
-      // 1-5
-      platform: ConfBot["platform"];
-      // off, error ,warn, info, debug, trace
-      log_level: ConfBot["log_level"];
+      // 登录配置
+      config: Config;
+    }
+  }
+}
+
+interface IGroup {
+  name: string;
+  plugin: {
+    [plugin_name: string]: {
+      // 插件锁定
+      lock: boolean;
+      // 插件开关
+      switch: boolean;
+      // 其它设置
+      [param: string]: string | number | boolean;
     }
   }
 }
 
 interface ISetting {
-  // 插件锁定
-  lock: boolean;
-  // 插件开关
-  switch: boolean;
-  // 其它设置
-  [param: string]: any;
-}
-
-interface IConfig {
   // 插件列表
-  plugin: string[];
-  [group_id: number]: {
-    name: string;
-    setting: {
-      [plugin_name: string]: ISetting
-    }
-  }
+  all_plugin: string[];
+  // 群聊列表
+  [group_id: number]: IGroup
 }
