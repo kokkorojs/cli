@@ -10,7 +10,7 @@ const util_1 = require("./util");
     all_bot.forEach(bot => {
         bot.once('system.online', () => {
             (0, bot_1.bindMasterEvents)(bot);
-            bot.logger.info(`可发送 >help 给机器人查看指令帮助`);
+            bot.logger.info(`可发送 ">help" 给机器人查看指令帮助`);
         });
     });
 })();

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cqcode = exports.checkCommand = exports.tips = exports.colors = exports.platform = exports.uptime = exports.cwd = exports.lowdb = exports.schedule = exports.logger = exports.axios = void 0;
+exports.message = exports.checkCommand = exports.tips = exports.colors = exports.platform = exports.uptime = exports.cwd = exports.lowdb = exports.schedule = exports.logger = exports.axios = void 0;
 const axios_1 = __importDefault(require("axios"));
 exports.axios = axios_1.default;
 const lowdb_1 = __importDefault(require("lowdb"));
@@ -11,6 +11,7 @@ const FileSync_1 = __importDefault(require("lowdb/adapters/FileSync"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 exports.schedule = node_schedule_1.default;
 const log4js_1 = require("log4js");
+const oicq_1 = require("oicq");
 // axios
 axios_1.default.defaults.timeout = 10000;
 /**
@@ -70,7 +71,7 @@ function checkCommand(command, raw_message) {
 }
 exports.checkCommand = checkCommand;
 /**
- * @description 生成图片 CQ 码（oicq 无法 catch 网络图片下载失败，所以单独处理）
+ * @description 生成图片消息段（oicq 无法 catch 网络图片下载失败，所以单独处理）
  * @param url - 图片 url
  * @param flash - 是否闪图
  * @returns - Promise
@@ -79,11 +80,11 @@ function image(url, flash = false) {
     return new Promise(async (resolve, reject) => {
         // 判断是否为网络链接
         if (!/^https?/g.test(url))
-            return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
+            return resolve(!flash ? oicq_1.segment.image(url) : oicq_1.segment.flash(url));
         await axios_1.default.get(url, { responseType: 'arraybuffer' })
             .then(response => {
-            const base64 = Buffer.from(response.data, 'binary').toString('base64');
-            resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=base64://${base64}]`);
+            const image_base64 = Buffer.from(response.data, 'binary').toString('base64');
+            resolve(!flash ? oicq_1.segment.image(image_base64) : oicq_1.segment.flash(image_base64));
         })
             .catch((error) => {
             reject(`Error: ${error.message}\n图片流写入失败，但已为你获取到图片地址:\n${url}`);
@@ -96,9 +97,9 @@ function image(url, flash = false) {
  * @returns
  */
 function at(qq) {
-    return `[CQ:at,qq=${qq}]`;
+    return oicq_1.segment.at(qq);
 }
-const cqcode = {
+const message = {
     image, at
 };
-exports.cqcode = cqcode;
+exports.message = message;

@@ -3,14 +3,14 @@
 import ora from 'ora';
 import cac, { CAC } from 'cac';
 import { promisify } from 'util';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { exec } from 'child_process'
 import { existsSync } from 'fs';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import prompts, { PromptObject } from 'prompts';
 
 import { cwd, tips, colors, logger } from './util';
-import { KOKKORO_UPDAY, KOKKORO_VERSION } from './help';
+import { KOKKORO_UPDAY, KOKKORO_VERSION, KOKKORO_CHANGELOGS } from './help';
 
 const { cyan } = colors;
 const { error, info, success, warn } = tips;
@@ -73,22 +73,31 @@ const questions: PromptObject[] = [
         port,
         bots: {
           [uin]: {
-            masters: masters.map(Number), auto_login: true, prefix: '>', platform: 5, log_level: 'info'
+            prefix: '>',
+            auto_login: true,
+            login_mode: 'qrcode',
+            masters: masters.map(Number),
+            config: {
+              platform: 5,
+              log_level: 'info',
+            }
           }
         }
       };
 
       writeFile(`kkrconfig.json`, `${JSON.stringify(config, null, 2)}`)
         .then(async () => {
+          !existsSync(join(cwd, `/plugins`)) && await mkdir(join(cwd, `/plugins`));
+
           console.log(`\n${success} created config file ${cyan(`'${config_path}'`)}`);
 
+          const promiseExec = promisify(exec);
           const all_plugin = ['kokkoro', ...plugins];
           const plugin_length = all_plugin.length;
 
           for (let i = 0; i < plugin_length; i++) {
             const plugin = all_plugin[i];
             const spinner = ora(`Install ${plugin}`).start();
-            const promiseExec = promisify(exec);
 
             try {
               await promiseExec(`npm i -D ${plugin}`);
@@ -128,7 +137,7 @@ const questions: PromptObject[] = [
 
       logger.mark(`----------`);
       logger.mark(`Package Version: kokkoro@${KOKKORO_VERSION} (Released on ${KOKKORO_UPDAY})`);
-      logger.mark(`View Changelogs：https://github.com/dcyuki/kokkoro/releases`);
+      logger.mark(`View Changelogs：${KOKKORO_CHANGELOGS}`);
       logger.mark(`----------`);
       logger.mark(`项目启动完成，开始登录账号`);
 

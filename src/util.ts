@@ -3,6 +3,7 @@ import low from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
 import schedule from 'node-schedule';
 import { getLogger, Logger } from 'log4js';
+import { AtElem, FlashElem, ImageElem, segment } from 'oicq';
 
 // axios
 axios.defaults.timeout = 10000;
@@ -67,21 +68,21 @@ function checkCommand(command: { [key: string]: RegExp }, raw_message: string): 
 }
 
 /**
- * @description 生成图片 CQ 码（oicq 无法 catch 网络图片下载失败，所以单独处理）
+ * @description 生成图片消息段（oicq 无法 catch 网络图片下载失败，所以单独处理）
  * @param url - 图片 url
  * @param flash - 是否闪图
  * @returns - Promise
  */
-function image(url: string, flash: boolean = false): Promise<string | Error> {
+function image(url: string, flash: boolean = false): Promise<ImageElem | FlashElem | string> {
   return new Promise(async (resolve, reject) => {
     // 判断是否为网络链接
-    if (!/^https?/g.test(url)) return resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=${url}]`);
+    if (!/^https?/g.test(url)) return resolve(!flash ? segment.image(url) : segment.flash(url));
 
     await axios.get(url, { responseType: 'arraybuffer' })
       .then(response => {
-        const base64: string = Buffer.from(response.data, 'binary').toString('base64');
+        const image_base64: string = Buffer.from(response.data, 'binary').toString('base64');
 
-        resolve(`[CQ:image,${flash ? 'type=flash,' : ''}file=base64://${base64}]`);
+        resolve(!flash ? segment.image(image_base64) : segment.flash(image_base64));
       })
       .catch((error: Error) => {
         reject(`Error: ${error.message}\n图片流写入失败，但已为你获取到图片地址:\n${url}`);
@@ -94,16 +95,17 @@ function image(url: string, flash: boolean = false): Promise<string | Error> {
  * @param qq 
  * @returns 
  */
-function at(qq: number): string {
-  return `[CQ:at,qq=${qq}]`
+function at(qq: number): AtElem {
+
+  return segment.at(qq);
 }
 
-const cqcode = {
+const message = {
   image, at
 };
 
 export {
   axios, logger, schedule, lowdb,
   cwd, uptime, platform, colors, tips,
-  checkCommand, cqcode,
+  checkCommand, message,
 }

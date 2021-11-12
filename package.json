@@ -1,7 +1,7 @@
 {
   "name": "kokkoro",
-  "version": "0.0.4",
-  "upday": "2021/10/04",
+  "version": "0.1.0",
+  "upday": "2021/11/05",
   "description": "とある咕咕の QQ 机器人框架",
   "main": "./dist/util.js",
   "bin": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dcyuki/kokkoro.git"
+    "url": "git+https://github.com/rumicchi/kokkoro.git"
   },
   "keywords": [
     "qq",
@@ -21,18 +21,19 @@
     "kokkoro",
     "princess-connect-redive"
   ],
-  "author": "dc_yuki",
+  "author": "rumicchi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dcyuki/kokkoro/issues"
+    "url": "https://github.com/rumicchi/kokkoro/issues"
   },
-  "homepage": "https://github.com/dcyuki/kokkoro#readme",
+  "homepage": "https://github.com/rumicchi/kokkoro#readme",
+  "changelogs": "https://github.com/rumicchi/kokkoro/releases",
   "dependencies": {
     "axios": "^0.22.0",
     "cac": "^6.7.3",
     "lowdb": "^1.0.0",
     "node-schedule": "^2.0.0",
-    "oicq": "^1.21.0",
+    "oicq": "^2.1.4",
     "ora": "^5.4.1",
     "prompts": "^2.4.1"
   },
