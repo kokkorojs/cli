@@ -2,10 +2,10 @@ import { resolve } from 'path'
 import { writeFile } from 'fs/promises';
 
 import { cwd } from './util';
-import { GlobalConfig, ISetting } from '..';
+import { GlobalConfig, Setting } from '..';
 import { getGlobalConfig, parseCommandline } from './config';
 
-const all_setting: Map<number, ISetting> = new Map();
+const all_setting: Map<number, Setting> = new Map();
 
 try {
   const global_config: GlobalConfig = getGlobalConfig();
