@@ -1,6 +1,7 @@
 import { Logger } from 'log4js';
-import { Client, Config } from "oicq";
+import { Client, Config } from 'oicq';
 
+// kokkoro 全局配置
 interface GlobalConfig {
   // 服务端口
   port: number;
@@ -24,9 +25,13 @@ interface GlobalConfig {
   }
 }
 
-interface IGroup {
+// 群聊
+interface Group {
+  // 群名称
   name: string;
+  // 插件
   plugin: {
+    // 插件名
     [plugin_name: string]: {
       // 插件锁定
       lock: boolean;
@@ -38,9 +43,9 @@ interface IGroup {
   }
 }
 
-interface ISetting {
+interface Setting {
   // 插件列表
   all_plugin: string[];
   // 群聊列表
-  [group_id: number]: IGroup
+  [group_id: number]: Group
 }

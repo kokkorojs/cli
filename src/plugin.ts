@@ -4,7 +4,7 @@ import { Dirent } from 'fs'
 import { writeFile, readdir, mkdir } from 'fs/promises'
 
 import { cwd, tips, logger } from './util'
-import { IGroup, ISetting } from '..'
+import { Group, Setting } from '..'
 import { getSetting } from './setting'
 
 // 所有插件实例
@@ -18,7 +18,7 @@ class PluginError extends Error {
 // #region Plugin 类
 class Plugin {
   protected readonly fullpath: string;
-  readonly setting: ISetting;
+  readonly setting: Setting;
   readonly binds = new Set<Client>();
 
   constructor(protected readonly name: string, protected readonly path: string) {
@@ -27,7 +27,7 @@ class Plugin {
   }
 
   protected async _editBotPluginCache(bot: Client, method: 'add' | 'delete') {
-    const setting = getSetting(bot.uin) as ISetting;
+    const setting = getSetting(bot.uin) as Setting;
     const set: Set<string> = new Set(setting.all_plugin);
     const setting_path = join(bot.dir, 'setting.json');
 

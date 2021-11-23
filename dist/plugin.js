@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const promises_1 = require("fs/promises");
 const util_1 = require("./util");
+const setting_1 = require("./setting");
 // 所有插件实例
 const plugins = new Map();
 const { error } = util_1.tips;
@@ -22,32 +23,24 @@ class Plugin {
         this.setting = require(this.path).default_setting;
     }
     async _editBotPluginCache(bot, method) {
-        let config;
-        let set;
-        const dir = (0, path_1.join)(bot.dir, 'config.json');
-        try {
-            config = require(dir);
-            set = new Set(config.plugin);
-        }
-        catch {
-            config = { plugin: [] };
-            set = new Set;
-        }
+        const setting = (0, setting_1.getSetting)(bot.uin);
+        const set = new Set(setting.all_plugin);
+        const setting_path = (0, path_1.join)(bot.dir, 'setting.json');
         set[method](this.name);
-        config.plugin = [...set];
+        setting.all_plugin = [...set];
         // 写入群配置
         const { gl } = bot;
         gl.forEach((value, group_id) => {
             const default_setting = {
                 name: value.group_name,
-                setting: {
+                plug: {
                     [this.name]: Object.assign({ lock: false, switch: true }, this.setting),
                 },
             };
             Object.assign(default_setting.setting[this.name], config[group_id] ? config[group_id].setting[this.name] : {});
             config[group_id] = default_setting;
         });
-        return (0, promises_1.writeFile)(dir, `${JSON.stringify(config, null, 2)}`);
+        return (0, promises_1.writeFile)(setting_path, `${JSON.stringify(setting, null, 2)}`);
     }
     async enable(bot) {
         if (this.binds.has(bot)) {
@@ -283,7 +276,7 @@ async function findAllPlugins() {
  * @returns Map<string, Plugin>
  */
 async function restorePlugins(bot) {
-    const dir = (0, path_1.join)(bot.dir, 'config.json');
+    const dir = (0, path_1.join)(bot.dir, 'setting.json');
     try {
         const config = require(dir);
         for (let name of config.plugin) {

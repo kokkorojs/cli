@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://kokkoro.js.org/images/74237509.jpg" width="200"/>
+    <img src="https://kokkoro.js.org/images/74237509.jpg" width="200" alt="id: 74237509" />
     <h3>Kokkoro</h3>
     <span>
         <a href="https://github.com/dcyuki/yumemi_bot" target="_blank">github</a>
