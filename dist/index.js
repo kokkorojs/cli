@@ -8,16 +8,15 @@ const ora_1 = __importDefault(require("ora"));
 const cac_1 = __importDefault(require("cac"));
 const util_1 = require("util");
 const path_1 = require("path");
+const process_1 = require("process");
 const child_process_1 = require("child_process");
 const fs_1 = require("fs");
 const promises_1 = require("fs/promises");
 const prompts_1 = __importDefault(require("prompts"));
-const util_2 = require("./util");
-const help_1 = require("./help");
-const { cyan } = util_2.colors;
-const { error, info, success, warn } = util_2.tips;
-const config_path = (0, path_1.resolve)(util_2.cwd, 'kkrconfig.json');
-const cli = (0, cac_1.default)('kokkoro').help().version(help_1.KOKKORO_VERSION);
+const { version } = require('../package.json');
+const work_path = (0, process_1.cwd)();
+const config_path = (0, path_1.resolve)(work_path, 'kkrconfig.json');
+const cli = (0, cac_1.default)('kokkoro').help().version(version);
 const questions = [
     {
         type: 'number',
@@ -42,22 +41,41 @@ const questions = [
         name: 'plugins',
         message: 'Select the plugins to load',
         choices: [
-            { title: 'kokkoro-plugin-og', value: 'kokkoro-plugin-og', description: '发送网页 html 的 og 信息' },
             { title: 'kokkoro-plugin-gvg', value: 'kokkoro-plugin-gvg', description: '会战插件（我不想打公会战）', disabled: true },
-            { title: 'kokkoro-plugin-setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的' },
-            { title: 'kokkoro-plugin-gobang', value: 'kokkoro-plugin-gobang', description: '五子棋小游戏', disabled: true },
-            { title: 'kokkoro-plugin-hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', disabled: true },
+            { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
+            { title: 'kokkoro-gvg', value: 'kokkoro-gvg', description: '会战插件（我不想打公会战）', disabled: true },
+            { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的', disabled: true },
+            { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true },
+            { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）', disabled: true },
         ],
         warn: '- 近期重构中，当前插件暂时不可用',
     }
 ];
+//#region colorful
+/**
+ * @description 控制台彩色打印
+ * @param code - ANSI escape code
+ * @returns - function
+ */
+function colorful(code) {
+    return (msg) => `\u001b[${code}m${msg}\u001b[0m`;
+}
+//#endregion
+const colors = {
+    red: colorful(31), green: colorful(32), yellow: colorful(33),
+    blue: colorful(34), magenta: colorful(35), cyan: colorful(36), white: colorful(37),
+};
+const info = colors.cyan('Info:');
+const error = colors.red('Error:');
+const warn = colors.yellow('Warn:');
+const success = colors.green('Success:');
 (function init(cli) {
     cli
         .command('init', 'initialize kokkoro config file')
         .option('-f, --forced', 'overwrite config file if it exists')
         .action(async (options) => {
         if (!options.forced && (0, fs_1.existsSync)(config_path)) {
-            console.warn(`${error} config file already exists. If you want to overwrite the current file, use ${cyan('kokkoro init -f')}`);
+            console.warn(`${error} config file already exists. If you want to overwrite the current file, use ${colors.cyan('kokkoro init -f')}`);
             process.exit(1);
         }
         const response = await prompts_1.default.prompt(questions, {
@@ -67,7 +85,7 @@ const questions = [
             },
         });
         const { uin, masters, port, plugins } = response;
-        const config = {
+        const kkrconfig = {
             port,
             bots: {
                 [uin]: {
@@ -82,12 +100,13 @@ const questions = [
                 }
             }
         };
-        (0, promises_1.writeFile)(`kkrconfig.json`, `${JSON.stringify(config, null, 2)}`)
-            .then(async () => {
-            !(0, fs_1.existsSync)((0, path_1.join)(util_2.cwd, `/plugins`)) && await (0, promises_1.mkdir)((0, path_1.join)(util_2.cwd, `/plugins`));
-            console.log(`\n${success} created config file ${cyan(`'${config_path}'`)}`);
+        try {
+            await (0, promises_1.writeFile)(`kkrconfig.json`, `${JSON.stringify(kkrconfig, null, 2)}`);
+            await (0, promises_1.writeFile)(`index.js`, `const { linkStart } = require('kokkoro-core');\nlinkStart();`);
+            !(0, fs_1.existsSync)((0, path_1.join)(work_path, `/plugins`)) && await (0, promises_1.mkdir)((0, path_1.join)(work_path, `/plugins`));
+            console.log(`\n${success} created config file ${colors.cyan(`'${config_path}'`)}`);
             const promiseExec = (0, util_1.promisify)(child_process_1.exec);
-            const all_plugin = ['kokkoro', ...plugins];
+            const all_plugin = ['kokkoro-core', ...plugins];
             const plugin_length = all_plugin.length;
             for (let i = 0; i < plugin_length; i++) {
                 const plugin = all_plugin[i];
@@ -102,35 +121,31 @@ const questions = [
                     i === plugin_length - 1 && console.warn(`\n${warn} npm package was not installed successfully`);
                 }
             }
-        })
-            .catch((err) => {
-            console.warn(`\n${error} ${err.message}`);
+        }
+        catch (err) {
+            console.warn(`\n${error} ${err}`);
             process.exit(0);
-        });
+        }
     });
 })(cli);
 (function start(cli) {
     cli
         .command('start', 'kokkoro bot link start')
-        .action(async () => {
+        .action(() => {
         if (!(0, fs_1.existsSync)(config_path)) {
-            console.warn(`${error} config file is not exists. If you want to create the file, use ${cyan('kokkoro init')}\n`);
+            console.warn(`${error} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);
             process.exit(1);
         }
-        // Acsii Font Name: Mini: http://patorjk.com/software/taag/
-        const wellcome = `-------------------------------------------------------------------------------------
-
-        \\    / _  | |  _  _  ._ _   _    _|_  _    |   _  |  |   _  ._ _  
-         \\/\\/ (/_ | | (_ (_) | | | (/_    |_ (_)   |< (_) |< |< (_) | (_)
-
--------------------------------------------------------------------------------------`;
-        console.log(cyan(wellcome));
-        util_2.logger.mark(`----------`);
-        util_2.logger.mark(`Package Version: kokkoro@${help_1.KOKKORO_VERSION} (Released on ${help_1.KOKKORO_UPDAY})`);
-        util_2.logger.mark(`View Changelogs：${help_1.KOKKORO_CHANGELOGS}`);
-        util_2.logger.mark(`----------`);
-        util_2.logger.mark(`项目启动完成，开始登录账号`);
-        require('./startup');
+        const node = (0, child_process_1.spawn)('node', ['index.js'], { stdio: 'inherit' });
+        node.stdout?.on('data', data => {
+            console.log(data.toString());
+        });
+        node.stderr?.on('data', data => {
+            console.error(data.toString());
+        });
+        node.on('close', code => {
+            console.log(`child process exited with code ${code}`);
+        });
     });
 })(cli);
 cli.parse();
