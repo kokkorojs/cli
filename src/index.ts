@@ -39,14 +39,16 @@ const questions: PromptObject[] = [
     name: 'plugins',
     message: 'Select the plugins to load',
     choices: [
-      { title: 'kokkoro-plugin-gvg', value: 'kokkoro-plugin-gvg', description: '会战插件（我不想打公会战）', disabled: true },
-      { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
-      { title: 'kokkoro-gvg', value: 'kokkoro-gvg', description: '会战插件（我不想打公会战）', disabled: true },
-      { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的', disabled: true },
+      { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili' },
       { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true },
+      { title: 'kokkoro-guild', value: 'kokkoro-guild', description: '公会插件（我不想打公会战）' },
       { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）', disabled: true },
+      { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
+      { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的' },
+      { title: 'kokkoro-sendbox', value: 'kokkoro-sendbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true },
+      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持' },
     ],
-    warn: '- 近期重构中，当前插件暂时不可用',
+    warn: '- 近期移植中，当前插件暂时不可用',
   }
 ];
 
@@ -124,7 +126,7 @@ const success = colors.green('Success:');
           const spinner = ora(`Install ${plugin}`).start();
 
           try {
-            await promiseExec(`npm i -D ${plugin}`);
+            await promiseExec(`npm i ${plugin} --registry=https://registry.npm.taobao.org`);
             spinner.succeed();
             i === plugin_length - 1 && console.log(`\n${success} project is initialized successfully`);
           } catch (error) {
