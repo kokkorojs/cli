@@ -41,10 +41,10 @@ const questions = [
         name: 'plugins',
         message: 'Select the plugins to load',
         choices: [
-            { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili' },
+            { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', disabled: true },
             { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true },
             { title: 'kokkoro-guild', value: 'kokkoro-guild', description: '公会插件（我不想打公会战）' },
-            { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）', disabled: true },
+            { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）' },
             { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
             { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的' },
             { title: 'kokkoro-sendbox', value: 'kokkoro-sendbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true },
