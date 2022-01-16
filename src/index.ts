@@ -45,7 +45,7 @@ const questions: PromptObject[] = [
       { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）' },
       { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
       { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的' },
-      { title: 'kokkoro-sendbox', value: 'kokkoro-sendbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true },
+      { title: 'kokkoro-sandbox', value: 'kokkoro-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果' },
       { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持' },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
