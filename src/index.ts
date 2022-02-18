@@ -24,16 +24,16 @@ const questions: PromptObject[] = [
   },
   {
     type: 'list',
-    name: 'masters',
+    name: 'master',
     message: 'Your master\'s QQ number'
   },
-  {
-    type: 'number',
-    name: 'port',
-    message: 'Kokkoro serve port',
-    initial: 2333,
-    validate: value => value < 1 || value > 65535 ? `Please enter a number between 1-65535` : true
-  },
+  // {
+  //   type: 'number',
+  //   name: 'port',
+  //   message: 'Kokkoro serve port',
+  //   initial: 2333,
+  //   validate: value => value < 1 || value > 65535 ? `Please enter a number between 1-65535` : true
+  // },
   {
     type: 'multiselect',
     name: 'plugins',
@@ -46,7 +46,7 @@ const questions: PromptObject[] = [
       { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息', disabled: true },
       { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的' },
       { title: 'kokkoro-sandbox', value: 'kokkoro-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果' },
-      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持' },
+      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持', disabled: true },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
   }
@@ -92,18 +92,21 @@ const success = colors.green('Success:');
         },
       });
 
-      const { uin, masters, port, plugins } = response;
+      const { uin, master, port, plugins } = response;
       const kkrconfig = {
         port,
         bots: {
           [uin]: {
-            prefix: '>',
             auto_login: true,
             login_mode: 'qrcode',
-            masters: masters.map(Number),
             config: {
-              platform: 5,
+              prefix: '>',
+              master: master.map(Number),
+              platform: 1,
               log_level: 'info',
+              ignore_self: true,
+              reconn_interval: 5,
+              data_dir: join(process.cwd(), 'data/bots'),
             }
           }
         }
@@ -143,7 +146,7 @@ const success = colors.green('Success:');
 
 (function start(cli: CAC) {
   cli
-    .command('start', 'kokkoro bot link start')
+    .command('start', 'kokkoro bot startup')
     .action(() => {
       if (!existsSync(config_path)) {
         console.warn(`${error} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);
