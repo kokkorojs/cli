@@ -24,7 +24,7 @@ const questions: PromptObject[] = [
   },
   {
     type: 'list',
-    name: 'masters',
+    name: 'master',
     message: 'Your master\'s QQ number'
   },
   // {
@@ -92,21 +92,24 @@ const success = colors.green('Success:');
         },
       });
 
-      const { uin, masters, port, plugins } = response;
+      const { uin, master, port, plugins } = response;
       const kkrconfig = {
         port,
         bots: {
           [uin]: {
+            prefix: '>',
             auto_login: true,
             login_mode: 'qrcode',
+            master: master.map(Number),
             config: {
-              prefix: '>',
-              masters: masters.map(Number),
-              platform: 1,
               log_level: 'info',
+              platform: 1,
               ignore_self: true,
+              resend: true,
+              data_dir: './data/bots',
               reconn_interval: 5,
-              data_dir: join(process.cwd(), 'data/bots'),
+              cache_group_member: true,
+              auto_server: true,
             }
           }
         }
