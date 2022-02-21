@@ -13,7 +13,7 @@ import prompts, { PromptObject } from 'prompts';
 const { version } = require('../package.json');
 
 const work_path = cwd();
-const config_path = resolve(work_path, 'kkrconfig.json');
+const config_path = resolve(work_path, 'kokkoro.json');
 const cli = cac('kokkoro').help().version(version);
 const questions: PromptObject[] = [
   {
@@ -93,7 +93,7 @@ const success = colors.green('Success:');
       });
 
       const { uin, master, port, plugins } = response;
-      const kkrconfig = {
+      const kokkoro = {
         port,
         bots: {
           [uin]: {
@@ -116,12 +116,12 @@ const success = colors.green('Success:');
       };
 
       try {
-        await writeFile(`kkrconfig.json`, `${JSON.stringify(kkrconfig, null, 2)}`);
+        await writeFile(`kokkoro.json`, JSON.stringify(kokkoro, null, 2));
         await writeFile(`index.js`, `const { linkStart } = require('kokkoro-core');\nlinkStart();`);
 
         !existsSync(join(work_path, `/plugins`)) && await mkdir(join(work_path, `/plugins`));
 
-        console.log(`\n${success} created config file ${colors.cyan(`'${config_path}'`)}`);
+        console.log(`\n${success} created config file ${colors.cyan(config_path)}`);
 
         const promiseExec = promisify(exec);
         const all_plugin = ['kokkoro-core', ...plugins];
