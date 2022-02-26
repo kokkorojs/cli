@@ -14,7 +14,7 @@ import prompts, { PromptObject } from 'prompts';
 const { version } = require('../package.json');
 
 const work_path = cwd();
-const config_path = resolve(work_path, 'kokkoro.json');
+const config_path = resolve(work_path, 'kokkoro.yml');
 const cli = cac('kokkoro').help().version(version);
 const questions: PromptObject[] = [
   {
