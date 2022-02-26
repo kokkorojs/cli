@@ -2,6 +2,7 @@
 
 import ora from 'ora';
 import cac, { CAC } from 'cac';
+import { dump } from 'js-yaml';
 import { promisify } from 'util';
 import { resolve, join } from 'path';
 import { cwd } from 'process';
@@ -117,7 +118,7 @@ const success = colors.green('Success:');
       };
 
       try {
-        await writeFile(`kokkoro.json`, JSON.stringify(kokkoro_config, null, 2));
+        await writeFile(`kokkoro.yml`, dump(kokkoro_config));
         await writeFile(`index.js`, `const { linkStart } = require('kokkoro-core');\nlinkStart();`);
 
         !existsSync(join(work_path, `/plugins`)) && await mkdir(join(work_path, `/plugins`));
