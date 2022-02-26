@@ -94,7 +94,7 @@ const success = colors.green('Success:');
       });
 
       const { uin, master, port, plugins } = response;
-      const kokkoro = {
+      const kokkoro_config = {
         port,
         bots: {
           [uin]: {
@@ -117,7 +117,7 @@ const success = colors.green('Success:');
       };
 
       try {
-        await writeFile(`kokkoro.json`, JSON.stringify(kokkoro, null, 2));
+        await writeFile(`kokkoro.json`, JSON.stringify(kokkoro_config, null, 2));
         await writeFile(`index.js`, `const { linkStart } = require('kokkoro-core');\nlinkStart();`);
 
         !existsSync(join(work_path, `/plugins`)) && await mkdir(join(work_path, `/plugins`));
