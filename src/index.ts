@@ -27,13 +27,14 @@ const questions: PromptObject[] = [
     name: 'master',
     message: 'Your master\'s QQ number'
   },
-  // {
-  //   type: 'number',
-  //   name: 'port',
-  //   message: 'Kokkoro serve port',
-  //   initial: 2333,
-  //   validate: value => value < 1 || value > 65535 ? `Please enter a number between 1-65535` : true
-  // },
+  {
+    type: 'number',
+    name: 'port',
+    message: 'Kokkoro web serve port',
+    initial: 0,
+    min: 0,
+    max: 65535,
+  },
   {
     type: 'multiselect',
     name: 'plugins',
