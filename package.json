@@ -32,12 +32,11 @@
   "homepage": "https://github.com/kokkorojs/kokkoro#readme",
   "dependencies": {
     "cac": "^6.7.12",
-    "js-yaml": "^4.1.0",
     "ora": "^5.4.1",
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.5",
     "@types/prompts": "^2.0.14"
   },
   "files": [
