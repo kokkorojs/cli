@@ -10,7 +10,7 @@ export default function (cli: CAC) {
     .command('start', 'kokkoro bot startup')
     .action(() => {
       if (!existsSync(config_path)) {
-        console.warn(`${TIP_ERROR} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);
+        console.error(`${TIP_ERROR} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);
         exit(1);
       }
 

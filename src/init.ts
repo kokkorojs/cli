@@ -19,7 +19,7 @@ const questions: PromptObject[] = [
   },
   {
     type: 'list',
-    name: 'master',
+    name: 'masters',
     message: 'Your master\'s QQ number'
   },
   {
@@ -66,7 +66,7 @@ export default function (cli: CAC) {
       }
 
       const response = await prompts(questions, { onCancel });
-      const { uin, master, port, plugins } = response;
+      const { uin, masters, port, plugins } = response;
       const kokkoro_config = {
         port,
         bots: {
@@ -74,7 +74,7 @@ export default function (cli: CAC) {
             prefix: '>',
             auto_login: true,
             login_mode: 'qrcode',
-            master: master.map(Number),
+            masters: masters.map(Number),
             config: {
               log_level: 'info',
               platform: 1,

@@ -2,8 +2,8 @@
 
 import cac from 'cac';
 import { join } from 'path';
-import { resolve } from 'path';
 import { cwd } from 'process';
+import { resolve } from 'path';
 
 import init from './init';
 import start from './start';
@@ -40,8 +40,8 @@ if (!process.argv.slice(2).length) {
 /**
  * 控制台彩色打印
  * 
- * @param code - ANSI escape code
- * @returns - Function
+ * @param {number} code - ANSI escape code
+ * @returns {Function} 
  */
 function colorful(code: number): Function {
   return (msg: string) => `\u001b[${code}m${msg}\u001b[0m`
