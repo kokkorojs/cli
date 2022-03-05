@@ -51,9 +51,9 @@ const onCancel = () => {
   console.log(`\n${TIP_INFO} config file generation has been aborted\n`);
   exit(0);
 }
-const main_template = `const { linkStart } = require('kokkoro-core');
+const main_template = `const { startup } = require('kokkoro-core');
 
-linkStart();`;
+startup();`;
 
 export default function (cli: CAC) {
   cli
@@ -97,7 +97,7 @@ export default function (cli: CAC) {
           await mkdir(plugins_path);
         }
 
-        console.log(`\n${TIP_SUCCESS} created config file ${colors.cyan(config_path)}\n`);
+        console.log(`${TIP_SUCCESS} created config file ${colors.cyan(config_path)}\n`);
 
         const promiseExec = promisify(exec);
         const all_plugin = ['kokkoro-core', ...plugins];
