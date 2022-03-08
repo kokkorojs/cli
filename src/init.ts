@@ -35,20 +35,20 @@ const questions: PromptObject[] = [
     name: 'plugins',
     message: 'Select the plugins to load',
     choices: [
-      { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili' },
-      { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true },
-      { title: 'kokkoro-guild', value: 'kokkoro-guild', description: '公会插件（我不想打公会战）' },
-      { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）' },
-      { title: 'kokkoro-og', value: 'kokkoro-og', description: '发送网页 html 的 og 信息' },
-      { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的' },
-      { title: 'kokkoro-sandbox', value: 'kokkoro-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果' },
-      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持', disabled: true },
+      { title: 'kokkoro-core', value: 'kokkoro-core', description: 'kokkoro 核心包', selected: true, },
+      { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', },
+      { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true, },
+      { title: 'kokkoro-guild', value: 'kokkoro-guild', description: '公会插件（我不想打公会战）', },
+      { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）', },
+      { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的', },
+      { title: 'kokkoro-sandbox', value: 'kokkoro-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', },
+      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持', disabled: true, },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
   }
 ];
 const onCancel = () => {
-  console.log(`\n${TIP_INFO} config file generation has been aborted\n`);
+  console.log(`${TIP_INFO} config file generation has been aborted\n`);
   exit(0);
 }
 const main_template = `const { startup } = require('kokkoro-core');
@@ -100,14 +100,13 @@ export default function (cli: CAC) {
         console.log(`${TIP_SUCCESS} created config file ${colors.cyan(config_path)}\n`);
 
         const promiseExec = promisify(exec);
-        const all_plugin = ['kokkoro-core', ...plugins];
-        const plugin_length = all_plugin.length;
+        const plugin_length = plugins.length;
 
         let install_success = true;
         let install_message = `${TIP_SUCCESS} project is initialized successfully\n`;
 
         for (let i = 0; i < plugin_length; i++) {
-          const plugin_name = all_plugin[i];
+          const plugin_name = plugins[i];
           const spinner = ora(`Install ${plugin_name}`).start();
           const command = `npm i ${plugin_name} --registry=https://registry.npm.taobao.org`;
 
