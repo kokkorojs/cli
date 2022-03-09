@@ -80,7 +80,7 @@ export default function (cli: CAC) {
               platform: 1,
               ignore_self: true,
               resend: true,
-              data_dir: './data/bots',
+              data_dir: './data/bot',
               reconn_interval: 5,
               cache_group_member: true,
               auto_server: true,
@@ -127,8 +127,9 @@ export default function (cli: CAC) {
             console.log(install_message);
           }
         }
-      } catch (error: any) {
-        console.warn(`\n${TIP_ERROR} ${error.message}`);
+      } catch (error) {
+        const { message } = error as Error;
+        console.warn(`\n${TIP_ERROR} ${message}`);
         exit(1);
       }
     })
