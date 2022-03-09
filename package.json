@@ -1,10 +1,10 @@
 {
   "name": "kokkoro",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "とある咕咕の QQ 机器人框架",
-  "main": "./dist/index.js",
+  "main": "./lib/index.js",
   "bin": {
-    "kokkoro": "./dist/index.js"
+    "kokkoro": "./lib/index.js"
   },
   "engines": {
     "node": ">= v14"
@@ -24,7 +24,7 @@
     "kokkoro",
     "princess-connect-redive"
   ],
-  "author": "dc_yuki",
+  "author": "yuki",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kokkorojs/kokkoro/issues"
@@ -33,9 +33,13 @@
   "dependencies": {
     "cac": "^6.7.12",
     "ora": "^5.4.1",
-    "prompts": "^2.4.2"
+    "prompts": "^2.4.2",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "@types/prompts": "^2.0.14"
-  }
+  },
+  "files": [
+    "lib"
+  ]
 }
