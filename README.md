@@ -23,7 +23,7 @@
 
 ## 介绍
 
-原项目 [yumemi](https://github.com/rumicchi/yumemi_bot) 最初为个人自用，主要围绕 [公主连结☆Re:Dive](https://priconne-redive.jp/) 开发相关功能，因代码严重耦合，使用 ts 重构并将原有特性做了拆分：
+原项目 [yumemi_bot](https://github.com/rumicchi/yumemi_bot) 最初为个人自用 bot，主要围绕 [公主连结☆Re:Dive](https://priconne-redive.jp/) 开发相关功能，因代码严重耦合不利于维护，使用 ts 重构
 
 - [x] 多群插件管理，所有插件针对不同群聊均支持参数自定义
 - [ ] web 可扩展性，每个插件均支持扩展独立的 web 页面及路由服务 ~~咕咕咕~~
@@ -158,6 +158,12 @@ bots:
       # 关闭后会一直使用 `msfwifi.3g.qq.com:8080` 进行连接
       auto_server: true
 ```
+
+## 补充
+
+首次登录推荐使用扫码，密码登录需要过滑块验证，非真机环境下抓取 token 会失效  
+但是扫码登录可能会出现掉线后需要重新扫码的情况，登录一段时间后，不会再弹出滑动验证  
+此时建议将 `login_mode` 改为 `password` 来切换密码登录，更加稳定 φ(≧ω≦*)♪
 
 ## 鸣谢
 
