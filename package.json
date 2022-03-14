@@ -1,6 +1,6 @@
 {
   "name": "@kokkoro/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cli tool for kokkoro",
   "main": "./lib/index.js",
   "bin": {

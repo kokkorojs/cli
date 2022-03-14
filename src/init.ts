@@ -103,7 +103,7 @@ export default function (cli: CAC) {
         let install_message = `${TIP_SUCCESS} project is initialized successfully\n`;
 
         for (let i = 0; i < modules_length; i++) {
-          const module = plugins[i];
+          const module = modules[i];
           const spinner = ora(`Install ${module}`).start();
           const command = `npm i ${module} --registry=https://registry.npm.taobao.org`;
 
