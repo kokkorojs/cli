@@ -1,7 +1,7 @@
 {
-  "name": "kokkoro",
-  "version": "0.1.4",
-  "description": "とある咕咕の QQ 机器人框架",
+  "name": "@kokkoro/cli",
+  "version": "0.1.0",
+  "description": "Cli tool for kokkoro",
   "main": "./lib/index.js",
   "bin": {
     "kokkoro": "./lib/index.js"
@@ -14,22 +14,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kokkorojs/kokkoro.git"
+    "url": "git+https://github.com/kokkorojs/cli.git"
   },
   "keywords": [
-    "qq",
-    "bot",
-    "oicq",
-    "coolq",
-    "kokkoro",
-    "princess-connect-redive"
+    "kokkoro"
   ],
   "author": "yuki",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kokkorojs/kokkoro/issues"
+    "url": "https://github.com/kokkorojs/cli/issues"
   },
-  "homepage": "https://github.com/kokkorojs/kokkoro#readme",
+  "homepage": "https://github.com/kokkorojs/cli#readme",
   "dependencies": {
     "cac": "^6.7.12",
     "ora": "^5.4.1",

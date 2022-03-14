@@ -31,7 +31,7 @@ const onCancel = () => {
   console.log(`${TIP_INFO} plugin module creation has been aborted\n`);
   exit(0);
 }
-const ts_template = `import { AllMessageEvent, Extension, Bot } from 'kokkoro-core';
+const ts_template = `import { AllMessageEvent, Extension, Bot } from 'kokkoro';
 
 export default class implements Extension {
   bot: Bot;

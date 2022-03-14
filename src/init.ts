@@ -35,14 +35,12 @@ const questions: PromptObject[] = [
     name: 'plugins',
     message: 'Select the plugins to load',
     choices: [
-      { title: 'kokkoro-core', value: 'kokkoro-core', description: 'kokkoro 核心包', selected: true, },
-      { title: 'kokkoro-bilibili', value: 'kokkoro-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', },
-      { title: 'kokkoro-gobang', value: 'kokkoro-gobang', description: '五子棋小游戏', disabled: true, },
-      { title: 'kokkoro-guild', value: 'kokkoro-guild', description: '公会插件（我不想打公会战）', },
-      { title: 'kokkoro-hitokoto', value: 'kokkoro-hitokoto', description: '每日一言（才不是网抑云）', },
-      { title: 'kokkoro-setu', value: 'kokkoro-setu', description: 'hso，我都不看这些的', },
-      { title: 'kokkoro-sandbox', value: 'kokkoro-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', },
-      { title: 'kokkoro-web', value: 'kokkoro-web', description: '为 kokkoro 提供 web 及路由支持', disabled: true, },
+      { title: 'bilibili', value: 'kokkoro-plugin-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', },
+      { title: 'gobang', value: 'kokkoro-plugin-gobang', description: '五子棋小游戏', disabled: true, },
+      { title: 'guild', value: 'kokkoro-plugin-guild', description: '公会插件（我不想打公会战）', },
+      { title: 'hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', },
+      { title: 'setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的', },
+      { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
   }
@@ -51,7 +49,7 @@ const onCancel = () => {
   console.log(`${TIP_INFO} config file generation has been aborted\n`);
   exit(0);
 }
-const main_template = `const { startup } = require('kokkoro-core');
+const main_template = `const { startup } = require('kokkoro');
 
 startup();`;
 
@@ -93,22 +91,21 @@ export default function (cli: CAC) {
         await writeFile(`main.js`, main_template);
         await writeFile(`kokkoro.yml`, stringify(kokkoro_config));
 
-        if (!existsSync(plugins_path)) {
-          await mkdir(plugins_path);
-        }
+        if (!existsSync(plugins_path)) { await mkdir(plugins_path); }
 
         console.log(`${TIP_SUCCESS} created config file ${colors.cyan(config_path)}\n`);
 
         const promiseExec = promisify(exec);
-        const plugin_length = plugins.length;
+        const modules = ['kokkoro', ...plugins];
+        const modules_length = modules.length;
 
         let install_success = true;
         let install_message = `${TIP_SUCCESS} project is initialized successfully\n`;
 
-        for (let i = 0; i < plugin_length; i++) {
-          const plugin_name = plugins[i];
-          const spinner = ora(`Install ${plugin_name}`).start();
-          const command = `npm i ${plugin_name} --registry=https://registry.npm.taobao.org`;
+        for (let i = 0; i < modules_length; i++) {
+          const module = plugins[i];
+          const spinner = ora(`Install ${module}`).start();
+          const command = `npm i ${module} --registry=https://registry.npm.taobao.org`;
 
           await promiseExec(command)
             .then(() => {
@@ -123,7 +120,7 @@ export default function (cli: CAC) {
               }
             })
 
-          if (i === plugin_length - 1) {
+          if (i === modules_length - 1) {
             console.log(install_message);
           }
         }
