@@ -37,10 +37,11 @@ const questions: PromptObject[] = [
     choices: [
       { title: 'bilibili', value: 'kokkoro-plugin-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', },
       { title: 'gobang', value: 'kokkoro-plugin-gobang', description: '五子棋小游戏', disabled: true, },
+      { title: 'group', value: 'kokkoro-plugin-group', description: '群管理，时不时来塞口球', },
       { title: 'guild', value: 'kokkoro-plugin-guild', description: '公会插件（我不想打公会战）', },
       { title: 'hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', },
       { title: 'setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的', },
-      { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true },
+      { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
   }
