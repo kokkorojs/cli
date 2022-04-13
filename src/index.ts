@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 
-import cac from 'cac';
 import { join } from 'path';
 import { cwd } from 'process';
 import { resolve } from 'path';
+import { program } from 'commander';
 
 import init from './init';
 import start from './start';
 import create from './create';
-
-const cli = cac('kokkoro');
-const version = require('../package.json').version;
 
 export const work_path = cwd();
 export const plugins_path = join(work_path, `/plugins`);
@@ -25,17 +22,15 @@ export const TIP_ERROR = colors.red('Error:');
 export const TIP_WARN = colors.yellow('Warn:');
 export const TIP_SUCCESS = colors.green('Success:');
 
-init(cli);
-start(cli);
-create(cli);
+init(program);
+start(program);
+create(program);
 
-cli.version(version);
-cli.help();
-cli.parse();
-
-if (!process.argv.slice(2).length) {
-  cli.outputHelp();
-}
+const version = require('../package.json').version;
+program
+  .name('kokkoro')
+  .version(version, '-v, --version')
+  .parse()
 
 /**
  * 控制台彩色打印

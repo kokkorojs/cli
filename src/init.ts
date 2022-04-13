@@ -1,9 +1,9 @@
 import ora from 'ora';
-import { CAC } from 'cac';
+import { exit } from 'process';
 import { existsSync } from 'fs';
 import { stringify } from 'yaml';
 import { promisify } from 'util';
-import { exit } from 'process';
+import { Command } from 'commander';
 import { exec } from 'child_process';
 import { writeFile, mkdir } from 'fs/promises';
 import prompts, { PromptObject } from 'prompts';
@@ -41,7 +41,7 @@ const questions: PromptObject[] = [
       { title: 'guild', value: 'kokkoro-plugin-guild', description: '公会插件（我不想打公会战）', },
       { title: 'hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', },
       { title: 'setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的', },
-      { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', },
+      { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true, },
     ],
     warn: '- 近期移植中，当前插件暂时不可用',
   }
@@ -54,9 +54,10 @@ const main_template = `const { startup } = require('kokkoro');
 
 startup();`;
 
-export default function (cli: CAC) {
-  cli
-    .command('init', 'initialize kokkoro config file')
+export default function (program: Command) {
+  program
+    .command('init')
+    .description('initialize kokkoro config file')
     .option('-f, --forced', 'overwrite config file if it exists')
     .action(async options => {
       if (!options.forced && existsSync(config_path)) {

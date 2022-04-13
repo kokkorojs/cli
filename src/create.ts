@@ -1,10 +1,10 @@
-import { CAC } from 'cac';
 import { join } from 'path';
-import { promisify } from 'util';
 import { exit } from 'process';
-import { exec } from 'child_process';
 import { existsSync } from 'fs';
 import { writeFile, mkdir, readFile } from 'fs/promises';
+import { promisify } from 'util';
+import { Command } from 'commander';
+import { exec } from 'child_process';
 import prompts, { PromptObject } from 'prompts';
 
 import { colors, config_path, plugins_path, TIP_ERROR, TIP_INFO } from '.';
@@ -22,8 +22,8 @@ const questions: PromptObject[] = [
     name: 'language',
     message: 'Which script langage would you like to use',
     choices: [
-      { title: 'Typescript', value: 'ts', description: 'yes yes yes' },
-      { title: 'Javascript', value: 'js', description: 'no no no' },
+      { title: 'Typescript', value: 'ts' },
+      { title: 'Javascript', value: 'js' },
     ],
   },
 ];
@@ -31,36 +31,47 @@ const onCancel = () => {
   console.log(`${TIP_INFO} plugin module creation has been aborted\n`);
   exit(0);
 }
-const ts_template = `import { AllMessageEvent, Extension, Bot } from 'kokkoro';
+const ts_template = `import { Plugin, Option } from 'kokkoro';
 
-export default class implements Extension {
-  bot: Bot;
+const option: Option = {
+  apply: true,
+  lock: false,
+};
+export const plugin = new Plugin('sample', option);
 
-  constructor(bot: Bot) {
-    this.bot = bot;
-  }
+plugin
+  .command('test')
+  .description('示例插件测试')
+  .sugar(/^(测试)$/)
+  .action(function () {
+    this.event.reply('this is a test...');
+  })
+`;
+const js_template = `const { Plugin } = require('kokkoro);
 
-  onMessage(event: AllMessageEvent) {
-    const raw_message = event.raw_message;
+const option = {
+  apply: true,
+  lock: false,
+};
+const plugin = new Plugin('sample', option);
 
-    raw_message === '你好' && event.reply('hello world');
-  }
-}`;
-const js_template = `module.exports = class {
-  constructor(bot) {
-    this.bot = bot;
-  }
+plugin
+  .command('test')
+  .description('示例插件测试')
+  .sugar(/^(测试)$/)
+  .action(function () {
+    this.event.reply('this is a test...');
+  })
 
-  onMessage(event) {
-    const raw_message = event.raw_message;
+module.exports = {
+  plugin,
+};
+`;
 
-    raw_message === '你好' && event.reply('hello world');
-  }
-}`;
-
-export default function (cli: CAC) {
-  cli
-    .command('create <name>', 'create a kokkoro plugin project')
+export default function (program: Command) {
+  program
+    .command('create <name>')
+    .description('create a kokkoro plugin project')
     .action(async name => {
       if (!existsSync(config_path)) {
         console.error(`${TIP_ERROR} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);

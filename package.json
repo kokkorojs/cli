@@ -1,13 +1,13 @@
 {
   "name": "@kokkoro/cli",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Cli tool for kokkoro",
   "main": "./lib/index.js",
   "bin": {
     "kokkoro": "./lib/index.js"
   },
   "engines": {
-    "node": ">= v14"
+    "node": ">= v15"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/kokkorojs/cli#readme",
   "dependencies": {
-    "cac": "^6.7.12",
+    "commander": "^9.1.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
     "yaml": "^1.10.2"

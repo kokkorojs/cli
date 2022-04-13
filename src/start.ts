@@ -1,13 +1,14 @@
-import { CAC } from 'cac';
 import { exit } from 'process';
 import { existsSync } from 'fs';
+import { Command } from 'commander';
 import { spawn } from 'child_process';
 
 import { colors, config_path, TIP_ERROR, TIP_INFO } from '.';
 
-export default function (cli: CAC) {
-  cli
-    .command('start', 'kokkoro bot startup')
+export default function (program: Command) {
+  program
+    .command('start')
+    .description('kokkoro bot startup')
     .action(() => {
       if (!existsSync(config_path)) {
         console.error(`${TIP_ERROR} config file is not exists. If you want to create the file, use ${colors.cyan('kokkoro init')}\n`);
