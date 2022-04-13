@@ -31,13 +31,16 @@ const onCancel = () => {
   console.log(`${TIP_INFO} plugin module creation has been aborted\n`);
   exit(0);
 }
-const ts_template = `import { Plugin, Option } from 'kokkoro';
+
+
+function getTemplate(name: string, langage: 'ts' | 'js') {
+  const ts_template = `import { Plugin, Option } from 'kokkoro';
 
 const option: Option = {
   apply: true,
   lock: false,
 };
-export const plugin = new Plugin('sample', option);
+export const plugin = new Plugin('${name}', option);
 
 plugin
   .command('test')
@@ -47,13 +50,13 @@ plugin
     this.event.reply('this is a test...');
   })
 `;
-const js_template = `const { Plugin } = require('kokkoro);
-
+  const js_template = `const { Plugin } = require('kokkoro');
+  
 const option = {
   apply: true,
   lock: false,
 };
-const plugin = new Plugin('sample', option);
+const plugin = new Plugin('${name}', option);
 
 plugin
   .command('test')
@@ -67,6 +70,8 @@ module.exports = {
   plugin,
 };
 `;
+  return langage === 'ts' ? ts_template : js_template;
+}
 
 export default function (program: Command) {
   program
@@ -86,6 +91,7 @@ export default function (program: Command) {
         const response = await prompts(questions, { onCancel });
         const { init, language } = response;
         const module_path = join(plugins_path, name);
+        const template = getTemplate(name, language);
 
         if (existsSync(module_path)) {
           console.warn(`${TIP_ERROR} plugin directory already exists\n`);
@@ -93,7 +99,6 @@ export default function (program: Command) {
         }
 
         await mkdir(module_path);
-
         switch (language) {
           case 'ts':
             const src_path = join(module_path, 'src');
@@ -101,11 +106,11 @@ export default function (program: Command) {
             const tsconfig = await readFile(tsconfig_path, 'utf8');
 
             await mkdir(src_path);
-            await writeFile(join(src_path, 'index.ts'), ts_template);
+            await writeFile(join(src_path, 'index.ts'), template);
             await writeFile(join(src_path, 'tsconfig.json'), tsconfig);
             break;
           case 'js':
-            await writeFile(join(module_path, 'index.js'), js_template);
+            await writeFile(join(module_path, 'index.js'), template);
             break;
         }
 
