@@ -71,11 +71,10 @@ export default function (program: Command) {
         port,
         bots: {
           [uin]: {
-            prefix: '>',
             auto_login: true,
-            login_mode: 'qrcode',
+            mode: 'qrcode',
             masters: masters.map(Number),
-            config: {
+            protocol: {
               log_level: 'info',
               platform: 1,
               ignore_self: true,
