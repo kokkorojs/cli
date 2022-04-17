@@ -35,7 +35,7 @@ const questions: PromptObject[] = [
     name: 'plugins',
     message: 'Select the plugins to load',
     choices: [
-      { title: 'bilibili', value: 'kokkoro-plugin-bilibili', description: '哔哩哔哩 (゜-゜)つロ 干杯~-bilibili', },
+      { title: 'rsshub', value: 'kokkoro-plugin-rsshub', description: 'RSS 订阅推送', },
       { title: 'gobang', value: 'kokkoro-plugin-gobang', description: '五子棋小游戏', disabled: true, },
       { title: 'group', value: 'kokkoro-plugin-group', description: '群管理，时不时来塞口球', },
       { title: 'guild', value: 'kokkoro-plugin-guild', description: '公会插件（我不想打公会战）', },
@@ -98,7 +98,7 @@ export default function (program: Command) {
         console.log(`${TIP_SUCCESS} created config file ${colors.cyan(config_path)}\n`);
 
         const promiseExec = promisify(exec);
-        const modules = ['kokkoro', ...plugins];
+        const modules = ['@kokkoro/jsondb', 'kokkoro', ...plugins];
         const modules_length = modules.length;
 
         let install_success = true;
