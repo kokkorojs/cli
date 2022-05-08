@@ -40,6 +40,7 @@ const questions: PromptObject[] = [
       { title: 'group', value: 'kokkoro-plugin-group', description: '群管理，时不时来塞口球', },
       { title: 'guild', value: 'kokkoro-plugin-guild', description: '公会插件（我不想打公会战）', },
       { title: 'hitokoto', value: 'kokkoro-plugin-hitokoto', description: '每日一言（才不是网抑云）', },
+      { title: 'saucenao', value: 'kokkoro-plugin-saucenao', description: 'Locating image sources', },
       { title: 'setu', value: 'kokkoro-plugin-setu', description: 'hso，我都不看这些的', },
       { title: 'sandbox', value: 'kokkoro-plugin-sandbox', description: '将收到的消息当做代码在沙盒中执行，并返回结果', disabled: true, },
     ],
@@ -68,6 +69,7 @@ export default function (program: Command) {
       const response = await prompts(questions, { onCancel });
       const { uin, masters, port, plugins } = response;
       const kokkoro_config = {
+        api_key: {},
         port,
         bots: {
           [uin]: {
